@@ -1,11 +1,24 @@
 # Tasmota-coffee-machine-berry
 
-[project intro]
+Welcome to the Coffee Machine Home Automation Project! This project is designed to turn your regular coffee machine into a smart, controllable device, allowing you to brew your favorite coffee with just a click.
+
+The primary aim of this project is to provide an automated interface for your coffee machine, enabling remote power on/off functionality and coffee brewing via a mobile application.
+
+The original project is based on esp8266 and Tasmota [Scripting Language](https://tasmota.github.io/docs/Scripting-Language/): [Tasmota-coffee-machine](https://github.com/robertoamd90/Tasmota-coffee-machine).
+
+This project use ESP32 and Tasmota [Berry](https://tasmota.github.io/docs/Berry/)
 
 <h2>Hardware requirement:</h2>
 
 * Coffee machine Grimac Tube (manual: 1 switch to power on, 1 switch to coffee brewing. You can use every manual 2 switch coffee machine)
-* Sonoff Dual R3 v2 Tasmotized
+* (Sonoff Dual R3 v2)[https://templates.blakadder.com/sonoff_DUALR3_v2.html] Tasmotized
+
+You need to replace the standard bistable switch of your coffee machine with the outputs of your Dual R. The output 1 for the Coffee machine power (coffee machine resistance) and the power 2 for the  coffee brewing (the pump).
+In the standard setup, the pump can be enabled only if the coffee machine in on, with the Dual R we can enable the 2 power independently, but we will replicate the original behavior via software.
+
+I have repalaced the switch with 2 button for the input 1 and 2 of the Dual R.
+
+In my case the Power on led was inside the power witch, adter i repalced this one with a button, i have added a 220v green led.
 
 <h2>Tasmota Main Page:</h2>
 
@@ -18,6 +31,13 @@ Delay to power off the coffee machine, after inactivity period (no coffee brewin
 
 <h3>Coffee brewing</h3>
 Through the 'Shot coffee time' input you can setup your perfect Coffee brewing time.
+
+<h3>Auto start brewing</h3>
+coming soon
+
+<h3>Multiple presets management</h3>
+coming soon
+
 
 <h3>Last Coffee brewing</h3>
 Every coffee you made, the system store lasto coffee brewing time. Through the appropiate button, you can set the last Coffee brewing time into Shot coffee time.
