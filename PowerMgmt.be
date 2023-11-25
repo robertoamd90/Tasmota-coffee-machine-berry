@@ -40,16 +40,14 @@ class PowerMgmt
     if 1 == newValue
       print('Power powerStatus1 changed to: 1')
       tasmota.cmd("SwitchMode2 3")
-      if persist.has("OffDelay")
-        tasmota.remove_timer("OffDelay")
-        tasmota.set_timer( int(persist.OffDelay * 1000 * 60), /-> tasmota.cmd("Power1 Off"), "OffDelay")
-      end
+      self.power1SetTimer()
     end
     if 0 == newValue
       print('Power powerStatus1 changed to: 0')
       tasmota.cmd("Power2 Off")
       tasmota.cmd("SwitchMode2 15")
       tasmota.remove_timer("OffDelay")
+      tasmota.remove_timer("ShortTime")
     end
   end
 
@@ -61,10 +59,8 @@ class PowerMgmt
       end
       if 1 == self.powerStatus1
         self.coffeeStartTime = tasmota.millis()
-        if persist.has("ShortTime")
-          tasmota.remove_timer("ShortTime")
-          tasmota.set_timer( int(persist.ShortTime * 1000), /-> tasmota.cmd("Power2 Off"), "ShortTime")
-        end
+        self.power1SetTimer()
+        self.power2SetTimer()
       end
     end
     if 0 == newValue
@@ -76,6 +72,20 @@ class PowerMgmt
         persist.LastCoffeeTime = lastCoffeeTimer
         persist.save()
       end
+    end
+  end
+
+  def power1SetTimer()
+    if persist.has("OffDelay")
+      tasmota.remove_timer("OffDelay")
+      tasmota.set_timer( int(persist.OffDelay * 1000 * 60), /-> tasmota.cmd("Power1 Off"), "OffDelay")
+    end
+  end
+
+  def power2SetTimer()
+    if persist.has("ShortTime")
+      tasmota.remove_timer("ShortTime")
+      tasmota.set_timer( int(persist.ShortTime * 1000), /-> tasmota.cmd("Power2 Off"), "ShortTime")
     end
   end
 
