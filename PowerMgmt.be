@@ -33,7 +33,7 @@ class PowerMgmt
   end
 
   def every_second()
-
+    
   end
 
   def powerStatus1Changed(newValue)
