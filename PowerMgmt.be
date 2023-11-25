@@ -1,5 +1,6 @@
 import persist
 
+
 class PowerMgmt
 
   static var powerMgmt
