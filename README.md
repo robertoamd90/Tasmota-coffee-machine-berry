@@ -32,16 +32,15 @@ Delay to power off the coffee machine, after inactivity period (no coffee brewin
 <h3>Coffee brewing</h3>
 Through the 'Shot coffee time' input you can setup your perfect Coffee brewing time.
 
+<h3>Last Coffee brewing</h3>
+Every coffee you made, the system store lasto coffee brewing time. Through the appropiate button, you can set the last Coffee brewing time into Shot coffee time.
+You can use thiss function to calibrate your coffee machine as we will see later.
+
 <h3>Auto start brewing</h3>
 coming soon
 
 <h3>Multiple presets management</h3>
 coming soon
-
-
-<h3>Last Coffee brewing</h3>
-Every coffee you made, the system store lasto coffee brewing time. Through the appropiate button, you can set the last Coffee brewing time into Shot coffee time.
-You can use thiss function to calibrate your coffee machine as we will see later.
 
 <h2>Calibration:</h2>
 
