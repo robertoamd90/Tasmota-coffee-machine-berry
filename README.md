@@ -37,7 +37,7 @@ Every coffee you made, the system store lasto coffee brewing time. Through the a
 You can use thiss function to calibrate your coffee machine as we will see later.
 
 <h3>Auto start brewing</h3>
-coming soon
+Are you tired of waiting for the coffee machine to be ready before brewing your coffee? With the auto-start function, you can load your preferred coffee pods and your coffee cup while the coffee machine is off. Simply press and hold the brewing button for 2.5 seconds, and the coffee machine will turn on in auto-start mode! Once the coffee machine is ready, the brewing process will start automatically!
 
 <h3>Multiple presets management</h3>
 coming soon
