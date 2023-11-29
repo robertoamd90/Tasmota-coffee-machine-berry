@@ -4,7 +4,7 @@ Welcome to the Coffee Machine Home Automation Project! This project is designed 
 
 The primary aim of this project is to provide an automated interface for your coffee machine, enabling remote power on/off functionality and coffee brewing via a mobile application.
 
-The original project is based on [esp8266](https://tasmota.github.io/docs/Scripting-Language/) and [Tasmota-coffee-machine](https://github.com/robertoamd90/Tasmota-coffee-machine).
+The original project is based on esp8266 [Tasmota Scripting-Language](https://tasmota.github.io/docs/Scripting-Language/): [Tasmota-coffee-machine](https://github.com/robertoamd90/Tasmota-coffee-machine).
 
 This project uses ESP32 and [Tasmota Berry](https://tasmota.github.io/docs/Berry/).
 
