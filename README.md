@@ -69,7 +69,7 @@ You need a precision scale.
 |---|---|
 | General Rule | coffee weight * 2 |
 | Short Coffee | 20g |
-| General Rule | 22g |
+| Long Coffee | 22g |
 </details>
 
 <details>
@@ -157,7 +157,7 @@ Hai bisogno di una bilancia di precisione.
 |---|---|
 | Regola generale | peso caffè * 2 |
 | Caffè corto | 20g |
-| Regola generale | 22g |
+| Caffè lungo | 22g |
 </details>
 
 <details>
