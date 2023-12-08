@@ -1,5 +1,6 @@
 import persist
 import webserver 
+import string
 
 class WebUiMgmt
 
@@ -9,9 +10,6 @@ class WebUiMgmt
   var OffDelayMax
   var ShortTimeMin
   var ShortTimeMax
-  
-  var OffDelayMqtt
-  var ShortTimeMqtt
   
   def init()
     if ! persist.has("OffDelay")
@@ -28,9 +26,6 @@ class WebUiMgmt
     self.OffDelayMax = 15
     self.ShortTimeMin = 10
     self.ShortTimeMax = 30
-
-    self.OffDelayMqtt = HaMqttNumber('Off Delay', 'OffDelay', 'mdi:timer', 'config', self.OffDelayMin, self.OffDelayMax, 'box', 1, 'min')
-    self.ShortTimeMqtt = HaMqttNumber('Short Time', 'ShortTime', 'mdi:timer', 'config', self.ShortTimeMin, self.ShortTimeMax, 'box', 0.01, 'sec')
 
     if nil != WebUiMgmt.webUiMgmt
       tasmota.remove_driver(WebUiMgmt.webUiMgmt)
@@ -99,8 +94,6 @@ class WebUiMgmt
           print(format("Got OffDelay"),persist.OffDelay )
           print(format("Got ShortTime"),persist.ShortTime )
           persist.save()
-          self.OffDelayMqtt.setValue()
-          self.ShortTimeMqtt.setValue()
           webserver.redirect("/?")
 
         end
@@ -108,7 +101,6 @@ class WebUiMgmt
           persist.ShortTime = persist.LastCoffeeTime
           print(format("Set LastCoffeeTime"),persist.LastCoffeeTime )
           persist.save()
-          self.OffDelayMqtt.setValue()
           webserver.redirect("/?")
 
         end
