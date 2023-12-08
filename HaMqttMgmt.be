@@ -1,5 +1,6 @@
 import mqtt
 import string
+import persist
 import json
 
 class HaMqttMgmt
@@ -57,10 +58,15 @@ class HaMqttMgmt
       #"availability_topic" : self.availabilityTopic,
       "command_topic" : self.commandTopic,
       #"command_template" : format("{\"%s\": {{ value }} }", self.unique_id),
-      "icon" : self.icon,
-      "entity_category" : self.entityCategory,
       "device" : {"connections": [["mac", HaMqttMgmt.mac]]}
     }
+
+    if self.entityCategory
+      configBody['entity_category'] = self.entityCategory
+    end
+    if self.icon
+      configBody['icon'] = self.icon
+    end
 
     return configBody
 
@@ -68,13 +74,13 @@ class HaMqttMgmt
 
   def createEntity()
     if mqtt.connected()
-      tasmota.remove_timer(format(self.unique_id,'_createEntityRetry'))
       self.generateTopics()
+      tasmota.remove_timer(format(self.unique_id,'_createEntityRetry'))
+      var configBody = self.generateConfigBody()
+      mqtt.publish(self.configTopic, json.dump(configBody))
       if self.setValue
         tasmota.set_timer( 1000, /-> self.setValue())
       end
-      var configBody = self.generateConfigBody()
-      mqtt.publish(self.configTopic, json.dump(configBody))
     else
       tasmota.set_timer( 1000, /-> self.createEntity(), format(self.unique_id,'_createEntityRetry'))
     end
@@ -82,7 +88,76 @@ class HaMqttMgmt
 
 end
 
-class HaMqttInput: HaMqttMgmt
+class HaMqttWithState: HaMqttMgmt
+
+  def generateConfigBody()
+    var configBody = super(self).generateConfigBody()
+    configBody['state_topic'] = self.stateTopic
+    return configBody
+  end
+
+  def setValue()
+    if persist.has(self.unique_id)
+      mqtt.publish(self.stateTopic, format('%s', persist.member(self.unique_id)))
+    end
+  end
+
+end
+
+class HaMqttSensor: HaMqttWithState
+
+  var suggestedDisplayPrecision
+  var unitOfMeasurement
+
+  def init(name, unique_id, icon, entityCategory, suggestedDisplayPrecision, unitOfMeasurement)
+    super(self).init(name, unique_id, icon, entityCategory)
+    self.mqttType = "sensor"    
+    self.suggestedDisplayPrecision = suggestedDisplayPrecision
+    self.unitOfMeasurement = unitOfMeasurement
+    self.createEntity()
+  end
+
+  def generateConfigBody()
+    var configBody = super(self).generateConfigBody()
+    configBody['suggested_display_precision'] = self.suggestedDisplayPrecision
+    configBody['unit_of_measurement'] = self.unitOfMeasurement
+    return configBody
+  end
+
+end
+
+class HaMqttInputGen: HaMqttWithState
+
+  def createEntity()
+    super(self).createEntity()
+
+    if self.commandTopic
+      mqtt.subscribe(self.commandTopic,
+        def (topic, idx, payload_s, payload_b)
+          return self.getValue(topic, idx, payload_s, payload_b)
+        end
+      )
+    end
+
+  end
+
+  def getValue(topic, idx, payload_s, payload_b)
+    var payload_typed = self.castValue(payload_s)
+    if payload_typed
+      persist.setmember(self.unique_id, payload_typed)
+      persist.save()
+      self.setValue()
+    end
+    return true
+  end
+
+  def castValue(payload_s)
+    return  payload_s
+  end
+  
+end
+
+class HaMqttInput: HaMqttInputGen
   
   var min
   var max
@@ -97,44 +172,16 @@ class HaMqttInput: HaMqttMgmt
 
   def generateConfigBody()
     var configBody = super(self).generateConfigBody()
-    configBody['state_topic'] = self.stateTopic
-    #configBody['value_template] = format("{{ value_json.%s }}", self.unique_id)
-    configBody['min'] = self.min
-    configBody['max'] = self.max
-    configBody['mode'] = self.mode
+    if self.min
+      configBody['min'] = self.min
+    end
+    if self.max
+      configBody['max'] = self.max
+    end
+    if self.mode
+      configBody['mode'] = self.mode
+    end
     return configBody
-  end
-
-  def createEntity()
-    super(self).createEntity()
-
-    mqtt.subscribe(self.commandTopic,
-      def (topic, idx, payload_s, payload_b)
-        return self.getValue(topic, idx, payload_s, payload_b)
-      end
-    )
-
-  end
-
-  def getValue(topic, idx, payload_s, payload_b)
-
-    print(">>>", payload_s)
-
-    var payload_object = json.load(payload_s)
-
-    if payload_object
-      persist.setmember(self.unique_id, payload_object)
-      persist.save()
-      self.setValue()
-    end
-
-    return true
-  end
-
-  def setValue()
-    if persist.has(self.unique_id)
-      mqtt.publish(self.stateTopic, json.dump(persist.member(self.unique_id)))
-    end
   end
 
 end
@@ -164,8 +211,38 @@ class HaMqttNumber: HaMqttInput
 
   def generateConfigBody()
     var configBody = super(self).generateConfigBody()
-    configBody['step'] = self.step
-    configBody['unit_of_measurement'] = self.unitOfMeasurement
+    if self.step
+      configBody['step'] = self.step
+    end
+    if self.unitOfMeasurement
+      configBody['unit_of_measurement'] = self.unitOfMeasurement
+    end
+    return configBody
+  end
+
+  def castValue(payload_s)
+    return  json.load(payload_s)
+  end
+
+end
+
+class HaMqttSelect: HaMqttInputGen
+
+  var options
+
+  def init(name, unique_id, icon, entityCategory, options)
+    if !options
+      raise 'HaMqttSelect.init error','invalid options'
+    end
+    super(self).init(name, unique_id, icon, entityCategory)
+    self.mqttType = "select"
+    self.options = options
+    self.createEntity()
+  end
+
+  def generateConfigBody()
+    var configBody = super(self).generateConfigBody()
+    configBody['options'] = self.options
     return configBody
   end
 
