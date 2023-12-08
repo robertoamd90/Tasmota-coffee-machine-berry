@@ -8,10 +8,13 @@ class PowerMgmt
   var powerStatus2
   var coffeeStartTime
   var autoStart
+  var lastCoffeeTimeMqtt
 
   def init()
     self.powerStatus1 = gpio.digital_read(27)
     self.powerStatus2 = gpio.digital_read(14)
+
+    self.lastCoffeeTimeMqtt = HaMqttSensor('Last Coffee Time', 'LastCoffeeTime', 'mdi:coffee', nil, 2, 'sec')
 
     if nil != PowerMgmt.powerMgmt
       tasmota.remove_driver(PowerMgmt.powerMgmt)
@@ -68,6 +71,7 @@ class PowerMgmt
       if lastCoffeeTimer > 5
         print(format("Got LastCoffeeTime /s"),lastCoffeeTimer )
         persist.LastCoffeeTime = lastCoffeeTimer
+        self.lastCoffeeTimeMqtt.setValue()
         persist.save()
       end
     end
