@@ -25,10 +25,8 @@ class HaMqttMgmt
       raise 'HaMqttMgmt.init error','invalid name and/or unique_id'
     end
 
-    var mac = tasmota.wifi()['mac']
-    var macSplitted = string.split(mac, ":")
-    HaMqttMgmt.mac = macSplitted.concat()
-    HaMqttMgmt.macShort = string.split(mac, 6)[1]
+    HaMqttMgmt.mac = string.split(tasmota.wifi()['mac'], ":").concat()
+    HaMqttMgmt.macShort = string.split(HaMqttMgmt.mac, 6)[1]
 
     self.name = name
     self.unique_id = unique_id
@@ -44,7 +42,7 @@ class HaMqttMgmt
     end
 
     self.configTopic = format("homeassistant/%s/%s/%s/config", self.mqttType, HaMqttMgmt.mac, self.unique_id)
-    self.availabilityTopic = format("tele/tasmota_%s/LWR", HaMqttMgmt.macShort)
+    self.availabilityTopic = format("tele/tasmota_%s/LWT", HaMqttMgmt.macShort)
     self.stateTopic = format("homeassistant/%s/%s/%s/state", self.mqttType, HaMqttMgmt.mac, self.unique_id)
     self.commandTopic = format("homeassistant/%s/%s/%s/set", self.mqttType, HaMqttMgmt.mac, self.unique_id)
 
@@ -55,9 +53,12 @@ class HaMqttMgmt
     var configBody = {
       "name" : self.name,
       "unique_id" : format("%s_%s", HaMqttMgmt.mac, self.unique_id),
-      #"availability_topic" : self.availabilityTopic,
+      "availability_topic" : self.availabilityTopic,
+      "payload_available": "Online",
+      "payload_not_available": "Offline",
       "command_topic" : self.commandTopic,
       #"command_template" : format("{\"%s\": {{ value }} }", self.unique_id),
+      "retain" : true,
       "device" : {"connections": [["mac", HaMqttMgmt.mac]]}
     }
 
@@ -78,9 +79,6 @@ class HaMqttMgmt
       tasmota.remove_timer(format(self.unique_id,'_createEntityRetry'))
       var configBody = self.generateConfigBody()
       mqtt.publish(self.configTopic, json.dump(configBody))
-      if self.setValue
-        tasmota.set_timer( 1000, /-> self.setValue())
-      end
     else
       tasmota.set_timer( 1000, /-> self.createEntity(), format(self.unique_id,'_createEntityRetry'))
     end
@@ -94,6 +92,15 @@ class HaMqttWithState: HaMqttMgmt
     var configBody = super(self).generateConfigBody()
     configBody['state_topic'] = self.stateTopic
     return configBody
+  end
+
+  def createEntity()
+    super(self).createEntity()
+
+    if self.commandTopic
+      tasmota.set_timer( 1000, /-> self.setValue())
+    end
+
   end
 
   def setValue()
@@ -244,6 +251,28 @@ class HaMqttSelect: HaMqttInputGen
     var configBody = super(self).generateConfigBody()
     configBody['options'] = self.options
     return configBody
+  end
+
+end
+
+class HaMqttButton: HaMqttMgmt
+
+  var buttonFunction
+
+  def init(name, unique_id, icon, entityCategory, buttonFunction)
+    super(self).init(name, unique_id, icon, entityCategory)
+    self.mqttType = "button"    
+    self.buttonFunction = buttonFunction
+    self.createEntity()
+  end
+
+  def createEntity()
+    super(self).createEntity()
+
+    if self.commandTopic
+      mqtt.subscribe(self.commandTopic,  self.buttonFunction)
+    end
+
   end
 
 end
