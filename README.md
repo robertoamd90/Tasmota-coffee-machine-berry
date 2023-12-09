@@ -33,6 +33,11 @@ SwitchMode2 15
 
 ![image](https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/7f5eb327-3ae9-4894-8e8e-951ee539bc4c)
 
+## Home Assistant Device Page
+
+<img width="337" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/5b895542-f0e6-4715-a2ff-f73d977676a4"></br>
+<img width="343" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4e468448-5062-414b-821a-4c0b1cf9f266">
+
 ## Features:
 
 ### Off delay
@@ -117,6 +122,13 @@ SwitchMode2 15
 ## Pagina principale di Tasmota:
 
 ![immagine](https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/7f5eb327-3ae9-4894-8e8e-951ee539bc4c)
+
+## Home Assistant Device Page
+
+<img width="337" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/5b895542-f0e6-4715-a2ff-f73d977676a4"></br>
+<img width="343" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4e468448-5062-414b-821a-4c0b1cf9f266">
+
+##
 
 ## Funzionalità:
 
