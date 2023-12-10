@@ -42,6 +42,7 @@ class PowerMgmt
 
   def every_second()
     self.checkAutoStartReady()
+    self.checkTelePeriodSend()
   end
 
   def powerStatus1Changed()
@@ -120,6 +121,12 @@ class PowerMgmt
         self.lastCoffeeTimeMqtt.setValue()
       end
       self.coffeeStartTime = nil
+    end
+  end
+
+  def checkTelePeriodSend()
+    if self.powerStatus1
+      tasmota.cmd("TelePeriod")
     end
   end
 
