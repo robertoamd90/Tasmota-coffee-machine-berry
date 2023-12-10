@@ -58,7 +58,6 @@ class HaMqttMgmt
       "payload_not_available": "Offline",
       "command_topic" : self.commandTopic,
       #"command_template" : format("{\"%s\": {{ value }} }", self.unique_id),
-      "retain" : true,
       "device" : {"connections": [["mac", HaMqttMgmt.mac]]}
     }
 
@@ -78,7 +77,7 @@ class HaMqttMgmt
       self.generateTopics()
       tasmota.remove_timer(format(self.unique_id,'_createEntityRetry'))
       var configBody = self.generateConfigBody()
-      mqtt.publish(self.configTopic, json.dump(configBody))
+      mqtt.publish(self.configTopic, json.dump(configBody), true)
     else
       tasmota.set_timer( 1000, /-> self.createEntity(), format(self.unique_id,'_createEntityRetry'))
     end
@@ -105,7 +104,7 @@ class HaMqttWithState: HaMqttMgmt
 
   def setValue()
     if persist.has(self.unique_id)
-      mqtt.publish(self.stateTopic, format('%s', persist.member(self.unique_id)))
+      mqtt.publish(self.stateTopic, format('%s', persist.member(self.unique_id)), true)
     end
   end
 
