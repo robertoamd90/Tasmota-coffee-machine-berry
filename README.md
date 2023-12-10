@@ -33,6 +33,11 @@ SwitchMode2 15
 
 ![image](https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/7f5eb327-3ae9-4894-8e8e-951ee539bc4c)
 
+## Home Assistant Device Page
+
+<img width="337" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/5b895542-f0e6-4715-a2ff-f73d977676a4"></br>
+<img width="343" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4e468448-5062-414b-821a-4c0b1cf9f266">
+
 ## Features:
 
 ### Off delay
@@ -47,8 +52,11 @@ The system stores the last coffee brewing time. Using the appropriate button, yo
 ### Auto start brewing
 Are you tired of waiting for the coffee machine to be ready before brewing your coffee? With the auto-start function, you can load your preferred coffee pods and your coffee cup while the coffee machine is off. Simply press and hold the brewing button for 2.5 seconds, and the coffee machine will turn on in auto-start mode! Once the coffee machine is ready, the brewing process will start automatically!
 
-### Multiple presets management
-Coming soon
+### Home Assistant integration
+The custom parameters are now available on Home Assistant, allowing you to directly set up your coffee machine through it. I chose not to use the [haco](https://github.com/fmtr/haco) library because I prefer not to install unnecessary plugins on Home Assistant when a feature is natively supported. Instead, I've developed a small library, HaMqttMgmt.be, to handle the creation and bidirectional update of MQTT entities from Berry using Home Assistant's standard discovery MQTT protocol.
+
+### Multiple presets management (Coming soon)
+Are you using multiple types of coffee pods? Do each of these types have different brewing times?
 
 ## Calibration:
 
@@ -115,6 +123,13 @@ SwitchMode2 15
 
 ![immagine](https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/7f5eb327-3ae9-4894-8e8e-951ee539bc4c)
 
+## Home Assistant Device Page
+
+<img width="337" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/5b895542-f0e6-4715-a2ff-f73d977676a4"></br>
+<img width="343" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4e468448-5062-414b-821a-4c0b1cf9f266">
+
+##
+
 ## Funzionalità:
 
 ### Ritardo di spegnimento
@@ -134,9 +149,11 @@ Puoi utilizzare questa funzione per calibrare la tua macchina da caffè come ved
 
 Sei stanco di aspettare che la macchina da caffè sia pronta prima di preparare il caffè? Con la funzione di avvio automatico, puoi caricare le tue cialde di caffè preferite e la tua tazza di caffè mentre la macchina da caffè è spenta. Basta premere e tenere premuto il pulsante di preparazione per 2,5 secondi e la macchina da caffè si accenderà in modalità di avvio automatico! Una volta pronta la macchina da caffè, il processo di preparazione del caffè inizierà automaticamente!
 
-### Gestione di più impostazioni predefinite
+### Integrazione con Home Assistant
+Ora i parametri personalizzati sono disponibili su Home Assistant, consentendoti di configurare direttamente la tua macchina del caffè tramite HA. Ho scelto di non utilizzare la libreria [haco](https://github.com/fmtr/haco) perché preferisco non installare plugin non necessari su Home Assistant quando una funzionalità è supportata nativamente. Invece, ho sviluppato una piccola libreria, HaMqttMgmt.be, per gestire la creazione e l'aggiornamento bidirezionale delle entità MQTT da Berry utilizzando il protocollo MQTT standard di discovery di Home Assistant.
 
-Prossimamente disponibile
+### Gestione di più impostazioni predefinite
+Stai utilizzando diversi tipi di cialde caffè? E ogni tipo ha un tempo di estrazione diverso?
 
 ## Calibrazione:
 
