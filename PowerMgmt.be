@@ -51,7 +51,7 @@ class PowerMgmt
       print('Power powerStatus1 changed to: 1')
       tasmota.cmd("SwitchMode2 3")
       self.power1SetTimer()
-      tasmota.set_timer( int(1000), /-> self.checkPreloadPump(), "CheckPreloadPump")
+      tasmota.set_timer( int(1500), /-> self.checkPreloadPump(), "CheckPreloadPump")
     else
       print('Power powerStatus1 changed to: 0')
       tasmota.cmd("Power2 Off")
@@ -99,6 +99,10 @@ class PowerMgmt
   end
 
   def checkPreloadPump()
+    print("### checkPreloadPump Start")
+    print(format("### checkPreloadPump self.preloadPumpTime: /s"),self.preloadPumpTime )
+    print(format("### checkPreloadPump energy.active_power: /s"),energy.active_power)
+    print(format("### checkPreloadPump !self.autoStartEnabled: /s"),!self.autoStartEnabled )
     if self.preloadPumpTime
     && energy.active_power > 0
     && !self.autoStartEnabled
@@ -107,6 +111,8 @@ class PowerMgmt
   end
 
   def preloadPump()
+    print("### preloadPump Start")
+    print(format("### checkPreloadPump energy.active_power: /s"),energy.active_power)
     if energy.active_power == 0
       tasmota.cmd("Power2 On")
       tasmota.set_timer( int(self.preloadPumpTime * 1000), /-> tasmota.cmd("Power2 Off"), "PreloadPumpSwitchOff")
@@ -117,11 +123,13 @@ class PowerMgmt
   end
   
   def preloadPumpResetTimer()
+    print("### preloadPumpResetTimer Start")
     tasmota.remove_timer("CheckPreloadPump")
     tasmota.remove_timer("PreloadPump")
   end
 
   def setAutoStart()
+    print("### setAutoStart Start")
     if !self.powerStatus1
     && !self.powerStatus2
       self.autoStartEnabled = true
@@ -131,6 +139,8 @@ class PowerMgmt
   end
 
   def checkAutoStart()
+    print("### checkAutoStart Start")
+    print(format("### checkAutoStart energy.active_power: /s"),energy.active_power)
     if energy.active_power > 0
       self.preloadPumpResetTimer()
       self.autoStart()
