@@ -117,7 +117,7 @@ class HaMqttSensor: HaMqttWithState
 
   def init(name, unique_id, icon, entityCategory, suggestedDisplayPrecision, unitOfMeasurement)
     super(self).init(name, unique_id, icon, entityCategory)
-    self.mqttType = "sensor"    
+    self.mqttType = "sensor"
     self.suggestedDisplayPrecision = suggestedDisplayPrecision
     self.unitOfMeasurement = unitOfMeasurement
     self.createEntity()
@@ -125,8 +125,12 @@ class HaMqttSensor: HaMqttWithState
 
   def generateConfigBody()
     var configBody = super(self).generateConfigBody()
-    configBody['suggested_display_precision'] = self.suggestedDisplayPrecision
-    configBody['unit_of_measurement'] = self.unitOfMeasurement
+    if self.suggestedDisplayPrecision
+      configBody['suggested_display_precision'] = self.suggestedDisplayPrecision
+    end
+    if self.unitOfMeasurement
+      configBody['unit_of_measurement'] = self.unitOfMeasurement
+    end
     return configBody
   end
 
