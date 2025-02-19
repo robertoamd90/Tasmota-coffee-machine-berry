@@ -5,7 +5,7 @@ class InputMgmt
   var input1
   var input2
 
-  var input2PressedTimer
+  var input2PressedTime
 
   def init()
     #Hight 0, Low 1
@@ -52,17 +52,17 @@ class InputMgmt
       print('Power input2 changed to: 1')
     else
       print('Power input2 changed to: 0')
-      self.input2PressedTimer = tasmota.millis()
+      self.input2PressedTime = tasmota.millis()
     end
   end
 
   def checkInput2LongPressed()
-    if !self.input2 && self.input2PressedTimer
-      var PressedTimer = tasmota.millis() - self.input2PressedTimer
+    if !self.input2 && self.input2PressedTime
+      var PressedTimer = tasmota.millis() - self.input2PressedTime
       if PressedTimer > 2500
         print(format("Input 2 long pressed (%s ms)", PressedTimer))
         PowerMgmt.powerMgmt.setAutoStart()
-        self.input2PressedTimer = nil
+        self.input2PressedTime = nil
       end
     end
   end
