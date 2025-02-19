@@ -11,6 +11,7 @@ class PowerMgmt
   var autoStartEnabled
 
   var lastCoffeeTimeMqtt
+  var statusMqtt
   var autoStartMqtt
 
   def init()
@@ -20,6 +21,7 @@ class PowerMgmt
     self.autoStartEnabled = false
 
     self.lastCoffeeTimeMqtt = HaMqttSensor('Last Coffee Time', 'LastCoffeeTime', 'mdi:coffee', nil, 2, 'sec')
+    self.statusMqtt = HaMqttSensor('Status', 'Status', nil, nil, nil, nil)
     self.autoStartMqtt = HaMqttButton('-Auto Start Coffee', 'AutoStartCoffee', 'mdi:coffee-to-go' , nil, /-> self.setAutoStart() )
 
     if nil != PowerMgmt.powerMgmt
@@ -44,6 +46,7 @@ class PowerMgmt
 
   def every_second()
     self.checkTelePeriodSend()
+    self.updateStatus()
   end
 
   def powerStatus1Changed()
@@ -61,6 +64,7 @@ class PowerMgmt
       self.preloadPumpResetTimer()
       self.autoStartResetTimer()
     end
+    self.updateStatus()
   end
 
   def powerStatus2Changed()
@@ -82,6 +86,7 @@ class PowerMgmt
       self.autoStartResetTimer()
       self.checkLastCoffeeTimer()
     end
+    self.updateStatus()
   end
 
   def power1SetTimer()
@@ -176,6 +181,26 @@ class PowerMgmt
   def checkTelePeriodSend()
     if self.powerStatus1
       tasmota.cmd("TelePeriod")
+    end
+  end
+
+  def updateStatus()
+    var oldStatus
+    if self.powerStatus1
+      if self.powerStatus2
+        persist.Status= 'Brewing'
+      else
+        if energy.active_power == 0
+          persist.Status= 'Ready'
+        else
+          persist.Status= 'Heating'
+        end
+      end
+    else
+      persist.Status= 'Standby'
+    end
+    if persist.Status != oldStatus
+      self.statusMqtt.setValue()
     end
   end
 
