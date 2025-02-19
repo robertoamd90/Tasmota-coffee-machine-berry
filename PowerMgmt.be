@@ -63,8 +63,6 @@ class PowerMgmt
       tasmota.remove_timer("ShortTime")
       self.preloadPumpResetTimer()
       self.autoStartResetTimer()
-      persist.Status= 'Standby'
-      statusMqtt.setValue()
     end
     self.updateStatus()
   end
@@ -202,7 +200,7 @@ class PowerMgmt
       persist.Status= 'Standby'
     end
     if persist.Status != oldStatus
-      statusMqtt.setValue()
+      self.statusMqtt.setValue()
     end
   end
 
