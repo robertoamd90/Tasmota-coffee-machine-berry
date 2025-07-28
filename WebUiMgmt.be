@@ -49,6 +49,7 @@ class WebUiMgmt
       webserver.content_send("<p><form style='display: block;' action='/WebUiMgmt' method='post'>")
 
       webserver.content_send("<table style='width:100%'>")
+      webserver.content_send(format("<tr><td><p>Status: <b>%s</b></p></td></tr>", persist.Status))
       webserver.content_send("<tr><td style='width:50%%'><p><b>Off delay time(m)</b></p></td>")
       webserver.content_send("<td style='width:20px;white-space:nowrap'></td>")
       webserver.content_send("<td style='style='width:50%%'><p><b>Shot coffee time(s)</b></p></td></tr>")
