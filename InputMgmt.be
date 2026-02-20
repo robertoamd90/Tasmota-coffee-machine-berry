@@ -35,8 +35,6 @@ class InputMgmt
       self.input2 = gpio.digital_read(33)
       self.input2Changed()
     end
-
-    self.checkInput2LongPressed()
   end
 
   def every_second()
@@ -46,7 +44,7 @@ class InputMgmt
   def input1Changed()
     if self.input1
       print('Power input1 changed to: 1')
-      self.input1PressedTime = nil
+      self.checkInput1Release()
     else
       print('Power input1 changed to: 0')
       self.input1PressedTime = tasmota.millis()
@@ -56,22 +54,39 @@ class InputMgmt
   def input2Changed()
     if self.input2
       print('Power input2 changed to: 1')
-      self.input2PressedTime = nil
+      self.checkInput2Release()
     else
       print('Power input2 changed to: 0')
       self.input2PressedTime = tasmota.millis()
     end
   end
 
-  def checkInput2LongPressed()
-    if !self.input2 && self.input2PressedTime
-      var PressedTimer = tasmota.millis() - self.input2PressedTime
-      if PressedTimer > 2500
-        print(format("Input 2 long pressed (%s ms)", PressedTimer))
-        PowerMgmt.powerMgmt.setAutoStart()
-        self.input2PressedTime = nil
+  def checkInput1Release()
+    if self.input1PressedTime
+      var pressTimer = tasmota.millis() - self.input1PressedTime
+      if pressTimer < 2500
+        print(format("Input 1 pressed for %i ms", pressTimer))
+        # TODO: PowerMgmt.powerMgmt.startCoffee1()
+      else
+        print(format("Input 1 long pressed (%i ms)", pressTimer))
+        # TODO: PowerMgmt.powerMgmt.setAutoStart()
       end
     end
+    self.input1PressedTime = nil
+  end
+
+  def checkInput2Release()
+    if self.input2PressedTime
+      var pressTimer = tasmota.millis() - self.input2PressedTime
+      if pressTimer < 2500
+        print(format("Input 2 pressed for %i ms", pressTimer))
+        # TODO: PowerMgmt.powerMgmt.startCoffee2()
+      else
+        print(format("Input 2 long pressed (%i ms)", pressTimer))
+        PowerMgmt.powerMgmt.setAutoStart()
+      end
+    end
+    self.input2PressedTime = nil
   end
 
 end
