@@ -16,6 +16,10 @@ class InputMgmt
     self.input1PressedTime = nil
     self.input2PressedTime = nil
 
+    # Configure button inputs in detached mode (not linked to power relays)
+    tasmota.cmd("SwitchMode1 15")  # Input 1 (GPIO 32) - Coffee1
+    tasmota.cmd("SwitchMode2 15")  # Input 2 (GPIO 33) - Coffee2
+
     if nil != InputMgmt.inputMgmt
       tasmota.remove_driver(InputMgmt.inputMgmt)
     end

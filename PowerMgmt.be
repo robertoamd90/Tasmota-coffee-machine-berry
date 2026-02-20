@@ -54,13 +54,11 @@ class PowerMgmt
   def powerStatus1Changed()
     if self.powerStatus1
       print('Power powerStatus1 changed to: 1')
-      tasmota.cmd("SwitchMode2 3")
       self.power1SetTimer()
       tasmota.set_timer( int(1500), /-> self.checkPreloadPump(), "CheckPreloadPump")
     else
       print('Power powerStatus1 changed to: 0')
       tasmota.cmd("Power2 Off")
-      tasmota.cmd("SwitchMode2 15")
       tasmota.remove_timer("OffDelay")
       tasmota.remove_timer("CoffeeTime")
       self.preloadPumpResetTimer()
