@@ -60,7 +60,7 @@ class PowerMgmt
       tasmota.cmd("Power2 Off")
       tasmota.cmd("SwitchMode2 15")
       tasmota.remove_timer("OffDelay")
-      tasmota.remove_timer("ShortTime")
+      tasmota.remove_timer("Coffee1Time")
       self.preloadPumpResetTimer()
       self.autoStartResetTimer()
     end
@@ -81,7 +81,7 @@ class PowerMgmt
       end
     else
       print('Power powerStatus2 changed to: 0')
-      tasmota.remove_timer("ShortTime")
+      tasmota.remove_timer("Coffee1Time")
       self.preloadPumpResetTimer()
       self.autoStartResetTimer()
       self.checkLastCoffeeTimer()
@@ -97,9 +97,9 @@ class PowerMgmt
   end
 
   def power2SetTimer()
-    if persist.has("ShortTime")
-      tasmota.remove_timer("ShortTime")
-      tasmota.set_timer( int(persist.ShortTime * 1000), /-> tasmota.cmd("Power2 Off"), "ShortTime")
+    if persist.has("Coffee1Time")
+      tasmota.remove_timer("Coffee1Time")
+      tasmota.set_timer( int(persist.Coffee1Time * 1000), /-> tasmota.cmd("Power2 Off"), "Coffee1Time")
     end
   end
 
