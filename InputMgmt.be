@@ -5,12 +5,16 @@ class InputMgmt
   var input1
   var input2
 
+  var input1PressedTime
   var input2PressedTime
 
   def init()
     #Hight 0, Low 1
     self.input1 = gpio.digital_read(32)
     self.input2 = gpio.digital_read(33)
+
+    self.input1PressedTime = nil
+    self.input2PressedTime = nil
 
     if nil != InputMgmt.inputMgmt
       tasmota.remove_driver(InputMgmt.inputMgmt)
@@ -42,14 +46,17 @@ class InputMgmt
   def input1Changed()
     if self.input1
       print('Power input1 changed to: 1')
+      self.input1PressedTime = nil
     else
       print('Power input1 changed to: 0')
+      self.input1PressedTime = tasmota.millis()
     end
   end
 
   def input2Changed()
     if self.input2
       print('Power input2 changed to: 1')
+      self.input2PressedTime = nil
     else
       print('Power input2 changed to: 0')
       self.input2PressedTime = tasmota.millis()
