@@ -17,7 +17,7 @@ class PowerMgmt
   def init()
     self.powerStatus1 = gpio.digital_read(27)
     self.powerStatus2 = gpio.digital_read(14)
-    self.preloadPumpTime = 2
+    self.preloadPumpTime = 1
     self.autoStartEnabled = false
 
     self.lastCoffeeTimeMqtt = HaMqttSensor('Last Coffee Time', 'LastCoffeeTime', 'mdi:coffee', nil, 2, 'sec')

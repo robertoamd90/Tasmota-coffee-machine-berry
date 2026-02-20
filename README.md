@@ -20,6 +20,32 @@ I have replaced the switch with 2 buttons for the input 1 and 2 of the Dual R.
 
 In my case, the Power on LED was inside the power switch. After I replaced this one with a button, I added a 220v green LED.
 
+## Deployment
+
+This project includes a convenient upload script to deploy your Berry files to the Tasmota device.
+
+### Quick Upload
+
+Use the included `upload-to-tasmota.sh` script to upload Berry files to your device:
+
+```bash
+# Upload all .be files in the directory
+./upload-to-tasmota.sh 192.168.1.100
+
+# Upload specific files
+./upload-to-tasmota.sh 192.168.1.100 PowerMgmt.be InputMgmt.be
+
+# Upload a single file
+./upload-to-tasmota.sh 192.168.1.100 autoexec.be
+```
+
+The script provides:
+- ✅ Batch upload support for multiple files
+- ✅ Automatic detection of all .be files when no files specified
+- ✅ Colored output with success/error indicators
+- ✅ Upload summary with statistics
+- ✅ Error handling and exit codes
+
 ## Preliminary Configuration
 
 Before proceeding, ensure that you've accessed the Tasmota console for your Sonoff Dual R3 v2 device. Input the following commands in the Tasmota console to enable the necessary switch modes:
