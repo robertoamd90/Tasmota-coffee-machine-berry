@@ -13,6 +13,7 @@ class WebUiMgmt
   var OffDelayMqtt
   var Coffee1TimeMqtt
   var Coffee2TimeMqtt
+  var CoffeeSelectionMqtt
   var SetLastCoffeeTimeMqtt
   
   def init()
@@ -28,6 +29,9 @@ class WebUiMgmt
     if ! persist.has("LastCoffeeTime")
       persist.LastCoffeeTime= 0
     end
+    if ! persist.has("SelectedCoffee")
+      persist.SelectedCoffee= "1"
+    end
 
     self.OffDelayMin = 5
     self.OffDelayMax = 15
@@ -37,6 +41,7 @@ class WebUiMgmt
     self.OffDelayMqtt = HaMqttNumber('Off Delay', 'OffDelay', 'mdi:timer', 'config', self.OffDelayMin, self.OffDelayMax, 'box', 1, 'min')
     self.Coffee1TimeMqtt = HaMqttNumber('Coffee 1 Time', 'Coffee1Time', 'mdi:timer', 'config', self.CoffeeTimeMin, self.CoffeeTimeMax, 'box', 0.01, 'sec')
     self.Coffee2TimeMqtt = HaMqttNumber('Coffee 2 Time', 'Coffee2Time', 'mdi:timer', 'config', self.CoffeeTimeMin, self.CoffeeTimeMax, 'box', 0.01, 'sec')
+    self.CoffeeSelectionMqtt = HaMqttSelect('Coffee Selection', 'SelectedCoffee', 'mdi:coffee', nil, ['1', '2'])
     self.SetLastCoffeeTimeMqtt = HaMqttButton('Set Last coffee time', 'SetLastCoffeeTime', 'mdi:coffee' , 'config', /-> self.setLastCoffeeTime() )
 
     if nil != WebUiMgmt.webUiMgmt
@@ -148,14 +153,14 @@ class WebUiMgmt
     end
 
     def setLastCoffeeTime()
-      if PowerMgmt.powerMgmt.selectedCoffee == 1
+      if persist.SelectedCoffee == "1"
         persist.Coffee1Time = persist.LastCoffeeTime
         self.Coffee1TimeMqtt.setValue()
-      elif PowerMgmt.powerMgmt.selectedCoffee == 2
+      elif persist.SelectedCoffee == "2"
         persist.Coffee2Time = persist.LastCoffeeTime
         self.Coffee2TimeMqtt.setValue()
       end
-      print(format("Set LastCoffeeTime for Coffee %i: %.2f", PowerMgmt.powerMgmt.selectedCoffee, persist.LastCoffeeTime))
+      print(format("Set LastCoffeeTime for Coffee %s: %.2f", persist.SelectedCoffee, persist.LastCoffeeTime))
       persist.save()
     end
 

@@ -9,7 +9,6 @@ class PowerMgmt
   var coffeeStartTime
   var preloadPumpTime
   var autoStartEnabled
-  var selectedCoffee
 
   var lastCoffeeTimeMqtt
   var statusMqtt
@@ -20,11 +19,11 @@ class PowerMgmt
     self.powerStatus2 = gpio.digital_read(14)
     self.preloadPumpTime = 1
     self.autoStartEnabled = false
-    self.selectedCoffee = 1
+
 
     self.lastCoffeeTimeMqtt = HaMqttSensor('Last Coffee Time', 'LastCoffeeTime', 'mdi:coffee', nil, 2, 'sec')
     self.statusMqtt = HaMqttSensor('Status', 'Status', nil, nil, nil, nil)
-    self.autoStartMqtt = HaMqttButton('-Auto Start Coffee', 'AutoStartCoffee', 'mdi:coffee-to-go' , nil, /-> self.setAutoStart(self.selectedCoffee) )
+    self.autoStartMqtt = HaMqttButton('-Auto Start Coffee', 'AutoStartCoffee', 'mdi:coffee-to-go' , nil, /-> self.setAutoStart(persist.SelectedCoffee) )
 
     if nil != PowerMgmt.powerMgmt
       tasmota.remove_driver(PowerMgmt.powerMgmt)
@@ -97,7 +96,7 @@ class PowerMgmt
   end
 
   def power2SetTimer()
-    var timeKey = "Coffee" + str(self.selectedCoffee) + "Time"
+    var timeKey = "Coffee" + persist.SelectedCoffee + "Time"
     if persist.has(timeKey)
       tasmota.remove_timer("CoffeeTime")
       tasmota.set_timer( int(persist[timeKey] * 1000), /-> tasmota.cmd("Power2 Off"), "CoffeeTime")
@@ -135,11 +134,10 @@ class PowerMgmt
   end
 
   def onCoffeeSelected(coffeeNum)
-    print(format("### onCoffeeSelected coffeeNum: %i", coffeeNum))
-    self.selectedCoffee = coffeeNum
+    print(format("### onCoffeeSelected coffeeNum: %s", coffeeNum))
+    persist.SelectedCoffee = coffeeNum
     
     if !self.powerStatus1
-      # Machine is OFF, turn it ON
       tasmota.cmd("Power1 On")
     elif self.powerStatus1
       tasmota.cmd("Power2 Toggle")
@@ -147,8 +145,8 @@ class PowerMgmt
   end
 
   def setAutoStart(coffeeNum)
-    print(format("### setAutoStart coffeeNum: %i", coffeeNum))
-    self.selectedCoffee = coffeeNum
+    print(format("### setAutoStart coffeeNum: %s", coffeeNum))
+    persist.SelectedCoffee = coffeeNum
     
     if !self.powerStatus1
     && !self.powerStatus2
