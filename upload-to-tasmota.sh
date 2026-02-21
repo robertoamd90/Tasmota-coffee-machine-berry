@@ -94,5 +94,19 @@ print_success "  Success:   $success"
 echo "========================================"
 
 # Exit with error code if there were failures
-[ $failed -gt 0 ] && exit 1
+if [ $failed -gt 0 ]; then
+    exit 1
+fi
+
+# Restart Tasmota if all uploads were successful
+echo ""
+print_info "Restarting Tasmota device..."
+if curl -f -s "http://${TASMOTA_IP}/cm?cmnd=Restart%201" > /dev/null 2>&1; then
+    print_success "Restart command sent successfully"
+    print_info "Device will restart in a few seconds..."
+else
+    print_error "Failed to send restart command"
+    exit 1
+fi
+
 exit 0

@@ -70,10 +70,10 @@ class InputMgmt
       var pressTimer = tasmota.millis() - self.input1PressedTime
       if pressTimer < 2500
         print(format("Input 1 pressed for %i ms", pressTimer))
-        PowerMgmt.powerMgmt.onCoffeeSelected(1)
+        PowerMgmt.powerMgmt.onCoffeeSelected("1")
       else
         print(format("Input 1 long pressed (%i ms)", pressTimer))
-        PowerMgmt.powerMgmt.setAutoStart(1)
+        PowerMgmt.powerMgmt.setAutoStart("1")
       end
     end
     self.input1PressedTime = nil
@@ -84,10 +84,10 @@ class InputMgmt
       var pressTimer = tasmota.millis() - self.input2PressedTime
       if pressTimer < 2500
         print(format("Input 2 pressed for %i ms", pressTimer))
-        PowerMgmt.powerMgmt.onCoffeeSelected(2)
+        PowerMgmt.powerMgmt.onCoffeeSelected("2")
       else
         print(format("Input 2 long pressed (%i ms)", pressTimer))
-        PowerMgmt.powerMgmt.setAutoStart(2)
+        PowerMgmt.powerMgmt.setAutoStart("2")
       end
     end
     self.input2PressedTime = nil
