@@ -109,7 +109,7 @@ class PowerMgmt
     print(format("### checkPreloadPump energy.active_power: /s"),energy.active_power)
     print(format("### checkPreloadPump !self.autoStartEnabled: /s"),!self.autoStartEnabled )
     if self.preloadPumpTime
-    && energy.active_power != nil && energy.active_power > 0
+    && energy.active_power > 0
     && !self.autoStartEnabled
       self.preloadPump()
     end
@@ -165,7 +165,7 @@ class PowerMgmt
   def checkAutoStart()
     print("### checkAutoStart Start")
     print(format("### checkAutoStart energy.active_power: /s"),energy.active_power)
-    if energy.active_power != nil && energy.active_power > 0
+    if energy.active_power > 0
       self.preloadPumpResetTimer()
       self.autoStart()
     end
