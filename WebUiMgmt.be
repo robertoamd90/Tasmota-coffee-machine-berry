@@ -136,6 +136,7 @@ class WebUiMgmt
 
         end
         if webserver.has_arg("LastCoffeeTimeApply")
+          persist.SelectedCoffee = webserver.arg("SelectedCoffee")
           self.setLastCoffeeTime()
           webserver.redirect("/?")
 
