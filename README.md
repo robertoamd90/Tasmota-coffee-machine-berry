@@ -97,6 +97,11 @@ This feature enables management of two independent coffee profiles (Coffee1 and 
 - Triggers auto-start mode for the selected profile
 - Once heated, automatically starts brewing with the selected profile's time
 
+**Simultaneous press** (both buttons within 500ms of each other):
+- Turns off the machine immediately (Power1 Off)
+- All active timers are cancelled
+- Works regardless of the current machine state
+
 #### Independent Brewing Times & Learning Mode
 Each profile has:
 - Independent brew duration (Coffee1Time, Coffee2Time)
@@ -231,6 +236,11 @@ Questa funzionalità abilita la gestione di due profili di caffè indipendenti c
 - Attiva la modalità auto-start per il profilo selezionato
 - Una volta riscaldata, avvia automaticamente l'estrazione con il tempo del profilo selezionato
 
+**Pressione simultanea** (entrambi i pulsanti entro 500ms l'uno dall'altro):
+- Spegne immediatamente la macchina (Power1 Off)
+- Tutti i timer attivi vengono cancellati
+- Funziona indipendentemente dallo stato corrente della macchina
+
 #### Durate di Estrazione Indipendenti e Modalità di Apprendimento
 
 Ogni profilo ha:
@@ -294,6 +304,7 @@ Hai bisogno di una bilancia di precisione.
    - [ ] Short-press Button 1/2 while machine is OFF → Only Power1 (resistenza) turns on
    - [ ] Short-press Button 1/2 while machine is ON → Power2 (pump) toggles
    - [ ] Long-press Button 1/2 → Machine enters auto-start mode, triggers after heat-up
+   - [ ] Simultaneous press Button 1+2 → Machine turns off immediately
    - [ ] Press duration correctly differentiates between short (< 2.5s) and long (≥ 2.5s)
 
 2. **MQTT Coffee Selection**
@@ -338,6 +349,7 @@ Hai bisogno di una bilancia di precisione.
    - [ ] Pressione breve Pulsante 1/2 mentre la macchina è SPENTA → Solo Power1 (resistenza) si accende
    - [ ] Pressione breve Pulsante 1/2 mentre la macchina è ACCESA → Power2 (pompa) attiva/disattiva
    - [ ] Pressione lunga Pulsante 1/2 → Macchina entra in modalità auto-start, attiva dopo riscaldamento
+   - [ ] Pressione simultanea Pulsante 1+2 → Macchina si spegne immediatamente
    - [ ] La durata della pressione differenzia correttamente tra breve (< 2,5s) e lunga (≥ 2,5s)
 
 2. **Selezione Caffè da MQTT**

@@ -40,6 +40,7 @@ class InputMgmt
       self.input2Changed()
     end
 
+    self.checkSimultaneousPress()
     self.checkInput1LongPress()
     self.checkInput2LongPress()
   end
@@ -87,6 +88,19 @@ class InputMgmt
         PowerMgmt.powerMgmt.onCoffeeSelected("2")
       end
       self.input2PressedTime = nil
+    end
+  end
+
+  def checkSimultaneousPress()
+    if self.input1PressedTime != nil && self.input2PressedTime != nil
+      var delta = self.input1PressedTime - self.input2PressedTime
+      if delta < 0  delta = -delta  end
+      if delta < 500
+        print(format("Simultaneous press detected (delta: %i ms)", delta))
+        self.input1PressedTime = nil
+        self.input2PressedTime = nil
+        tasmota.cmd("Power1 Off")
+      end
     end
   end
 
