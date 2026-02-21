@@ -48,15 +48,30 @@ else
     print_info "No files specified, uploading all .be files found"
 fi
 
-# Upload URL
+# URLs
 UPLOAD_URL="http://${TASMOTA_IP}/ufsu"
+DOWNLOAD_URL="http://${TASMOTA_IP}/ufsd"
 
 # Counters
 total=0
 success=0
 failed=0
 
+# Temp dir for verification downloads
+VERIFY_TMP=$(mktemp -d)
+trap "rm -rf ${VERIFY_TMP}" EXIT
+
 print_info "Starting upload to ${TASMOTA_IP}..."
+echo ""
+
+# Warm up the Tasmota filesystem before uploading (improves upload reliability)
+print_info "Warming up filesystem..."
+if curl -f -s "${DOWNLOAD_URL}?download=/" > /dev/null 2>&1; then
+    print_success "Filesystem ready"
+else
+    print_error "Could not reach Tasmota at ${TASMOTA_IP}"
+    exit 1
+fi
 echo ""
 
 # Upload each file
@@ -67,19 +82,33 @@ for file in "${files_to_upload[@]}"; do
         ((total++))
         continue
     fi
-    
+
     ((total++))
     print_info "Uploading: $file"
-    
-    # Execute curl and capture exit code
-    if curl -f -s -F "ufsu=@${file}" "${UPLOAD_URL}" > /dev/null 2>&1; then
-        print_success "Uploaded: $file"
-        ((success++))
+
+    # Upload
+    if ! curl -f -s -F "ufsu=@${file}" "${UPLOAD_URL}" > /dev/null 2>&1; then
+        print_error "Upload failed: $file"
+        ((failed++))
+        [ $total -lt ${#files_to_upload[@]} ] && sleep 0.5
+        continue
+    fi
+
+    # Verify: download back and compare
+    VERIFY_FILE="${VERIFY_TMP}/${file}"
+    if curl -f -s "${DOWNLOAD_URL}?download=/${file}" -o "${VERIFY_FILE}" 2>&1; then
+        if cmp -s "${file}" "${VERIFY_FILE}"; then
+            print_success "Uploaded and verified: $file"
+            ((success++))
+        else
+            print_error "Verification failed (content mismatch): $file"
+            ((failed++))
+        fi
     else
-        print_error "Upload error: $file"
+        print_error "Verification failed (download error): $file"
         ((failed++))
     fi
-    
+
     # Small pause between uploads
     [ $total -lt ${#files_to_upload[@]} ] && sleep 0.5
 done
@@ -89,7 +118,7 @@ echo ""
 echo "========================================"
 print_info "Upload summary:"
 echo "  Total:     $total"
-print_success "  Success:   $success"
+print_success "  Verified:  $success"
 [ $failed -gt 0 ] && print_error "  Failed:    $failed"
 echo "========================================"
 
@@ -98,9 +127,9 @@ if [ $failed -gt 0 ]; then
     exit 1
 fi
 
-# Restart Tasmota if all uploads were successful
+# Restart Tasmota only if all files uploaded and verified successfully
 echo ""
-print_info "Restarting Tasmota device..."
+print_info "All files verified. Restarting Tasmota device..."
 if curl -f -s "http://${TASMOTA_IP}/cm?cmnd=Restart%201" > /dev/null 2>&1; then
     print_success "Restart command sent successfully"
     print_info "Device will restart in a few seconds..."
