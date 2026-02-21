@@ -94,8 +94,8 @@ This feature enables management of two independent coffee profiles (Coffee1 and 
 - If machine is **ON**: Toggles the pump (Power2) - useful for manual start brewing, purging lines or cleaning
 
 **Long-press** (≥ 2.5 seconds):
-- Triggers auto-start mode for the selected profile
-- Once heated, automatically starts brewing with the selected profile's time
+- If machine is **OFF**: Triggers auto-start mode — once heated, automatically starts brewing with the selected profile's time
+- If machine is **ON**: Activates **auto learning mode** — starts brewing with no timer (indefinitely). Press **the same button** to stop. If the brew lasted more than 5 seconds, the duration is automatically saved and applied to the selected profile's time
 
 **Simultaneous press** (both buttons within 500ms of each other):
 - Turns off the machine immediately (Power1 Off)
@@ -105,7 +105,8 @@ This feature enables management of two independent coffee profiles (Coffee1 and 
 #### Independent Brewing Times & Learning Mode
 Each profile has:
 - Independent brew duration (Coffee1Time, Coffee2Time)
-- Learning mode: Press "Set Last Coffee Time" to save the actual brew duration to the selected profile
+- **Manual learning**: Press "Set Last Coffee Time" to save the last measured brew duration to the selected profile
+- **Auto learning**: Long-press a button while the machine is ON to start an untimed brew; stop it by pressing **the same button**. If the brew lasted more than 5 seconds, the duration is automatically saved and applied to the selected profile
 - No cross-contamination: Only the selected profile's time is updated
 
 #### Configuration Parameters
@@ -233,8 +234,8 @@ Questa funzionalità abilita la gestione di due profili di caffè indipendenti c
 - Se la macchina è **ACCESA**: Attiva/disattiva la pompa (Power2) - utile per erogazione manuale, spurgo linee o pulizia
 
 **Pressione lunga** (≥ 2,5 secondi):
-- Attiva la modalità auto-start per il profilo selezionato
-- Una volta riscaldata, avvia automaticamente l'estrazione con il tempo del profilo selezionato
+- Se la macchina è **SPENTA**: Attiva la modalità auto-start — una volta riscaldata, avvia automaticamente l'estrazione con il tempo del profilo selezionato
+- Se la macchina è **ACCESA**: Attiva la **modalità di apprendimento automatico** — avvia l'estrazione senza timer (a tempo indefinito). Premi **lo stesso pulsante** per fermarla. Se l'estrazione è durata più di 5 secondi, la durata viene automaticamente salvata e applicata al tempo del profilo selezionato
 
 **Pressione simultanea** (entrambi i pulsanti entro 500ms l'uno dall'altro):
 - Spegne immediatamente la macchina (Power1 Off)
@@ -245,7 +246,8 @@ Questa funzionalità abilita la gestione di due profili di caffè indipendenti c
 
 Ogni profilo ha:
 - Durata di estrazione indipendente (Coffee1Time, Coffee2Time)
-- Modalità di apprendimento: Premi "Set Last Coffee Time" per salvare la durata effettiva nel profilo selezionato
+- **Apprendimento manuale**: Premi "Set Last Coffee Time" per salvare l'ultima durata di estrazione misurata nel profilo selezionato
+- **Apprendimento automatico**: Tieni premuto un pulsante mentre la macchina è ACCESA per avviare un'estrazione senza timer; fermala premendo **lo stesso pulsante**. Se l'estrazione è durata più di 5 secondi, la durata viene automaticamente salvata e applicata al profilo selezionato
 - Nessuna contaminazione tra profili: Solo il tempo del profilo selezionato viene aggiornato
 
 #### Parametri di Configurazione
