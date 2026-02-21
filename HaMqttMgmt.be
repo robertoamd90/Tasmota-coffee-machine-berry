@@ -18,6 +18,7 @@ class HaMqttMgmt
   var unique_id
   var icon
   var entityCategory
+  var ready
 
   def init(name, unique_id, icon, entityCategory)
 
@@ -32,6 +33,7 @@ class HaMqttMgmt
     self.unique_id = unique_id
     self.icon = icon
     self.entityCategory = entityCategory
+    self.ready = false
 
   end
 
@@ -45,6 +47,7 @@ class HaMqttMgmt
     self.availabilityTopic = format("tele/tasmota_%s/LWT", HaMqttMgmt.macShort)
     self.stateTopic = format("homeassistant/%s/%s/%s/state", self.mqttType, HaMqttMgmt.mac, self.unique_id)
     self.commandTopic = format("homeassistant/%s/%s/%s/set", self.mqttType, HaMqttMgmt.mac, self.unique_id)
+    self.ready = true
 
   end
 
@@ -103,7 +106,7 @@ class HaMqttWithState: HaMqttMgmt
   end
 
   def setValue()
-    if persist.has(self.unique_id)
+    if self.ready && persist.has(self.unique_id)
       mqtt.publish(self.stateTopic, format('%s', persist.member(self.unique_id)), true)
     end
   end
