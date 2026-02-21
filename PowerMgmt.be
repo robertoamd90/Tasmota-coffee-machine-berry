@@ -136,6 +136,9 @@ class PowerMgmt
   def onCoffeeSelected(coffeeNum)
     print(format("### onCoffeeSelected coffeeNum: %s", coffeeNum))
     persist.SelectedCoffee = coffeeNum
+    if WebUiMgmt.webUiMgmt != nil
+      WebUiMgmt.webUiMgmt.CoffeeSelectionMqtt.setValue()
+    end
     
     if !self.powerStatus1
       tasmota.cmd("Power1 On")
@@ -147,6 +150,9 @@ class PowerMgmt
   def setAutoStart(coffeeNum)
     print(format("### setAutoStart coffeeNum: %s", coffeeNum))
     persist.SelectedCoffee = coffeeNum
+    if WebUiMgmt.webUiMgmt != nil
+      WebUiMgmt.webUiMgmt.CoffeeSelectionMqtt.setValue()
+    end
     
     if !self.powerStatus1
     && !self.powerStatus2
