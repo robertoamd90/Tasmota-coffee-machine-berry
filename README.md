@@ -48,10 +48,13 @@ The script provides:
 
 ## Preliminary Configuration
 
-Before proceeding, ensure that you've accessed the Tasmota console for your Sonoff Dual R3 v2 device. Input the following commands in the Tasmota console to enable the necessary switch modes:
+Before proceeding with initial setup, please note:
 
+**SwitchMode Configuration**: As of Feature 1, the SwitchMode settings are automatically configured at runtime by the InputMgmt module. If you're upgrading from an older version, you can safely ignore the manual SwitchMode commands below. The device will auto-configure on startup.
+
+**Legacy Manual Setup** (If needed for other configurations):
 ```bash
-SwitchMode1 3
+SwitchMode1 15
 SwitchMode2 15
 ```
 
@@ -78,11 +81,43 @@ The system stores the last coffee brewing time. Using the appropriate button, yo
 ### Auto start brewing
 Are you tired of waiting for the coffee machine to be ready before brewing your coffee? With the auto-start function, you can load your preferred coffee pods and your coffee cup while the coffee machine is off. Simply press and hold the brewing button for 2.5 seconds, and the coffee machine will turn on in auto-start mode! Once the coffee machine is ready, the brewing process will start automatically!
 
+### Multiple Coffee Profiles (Feature 1) ✨
+This feature enables management of two independent coffee profiles (Coffee1 and Coffee2) with different brewing times.
+
+#### Profile Selection & Control
+- **Button 1**: Selects Coffee1 profile
+- **Button 2**: Selects Coffee2 profile
+- **Home Assistant**: Coffee Selection dropdown for remote profile switching
+
+**Short-press** (< 2.5 seconds):
+- If machine is **OFF**: Turns on only the heating element (Power1) - ready to brew manually
+- If machine is **ON**: Toggles the pump (Power2) - useful for manual start brewing, purging lines or cleaning
+
+**Long-press** (≥ 2.5 seconds):
+- Triggers auto-start mode for the selected profile
+- Once heated, automatically starts brewing with the selected profile's time
+
+#### Independent Brewing Times & Learning Mode
+Each profile has:
+- Independent brew duration (Coffee1Time, Coffee2Time)
+- Learning mode: Press "Set Last Coffee Time" to save the actual brew duration to the selected profile
+- No cross-contamination: Only the selected profile's time is updated
+
+#### Configuration Parameters
+- **Off Delay** (minutes): Auto-shutdown after inactivity
+- **Coffee 1 Time** (seconds): Brew duration for Coffee1
+- **Coffee 2 Time** (seconds): Brew duration for Coffee2
+- **Last Coffee Time** (seconds): Measured duration from last brew (read-only)
+
+#### MQTT Entities
+- `SelectedCoffee` (select): Choose between Coffee 1 and Coffee 2
+- `Coffee1Time` (number): Coffee1 brew duration
+- `Coffee2Time` (number): Coffee2 brew duration
+- `OffDelay` (number): Auto-shutdown delay
+- `SetLastCoffeeTime` (button): Apply measured time to selected profile
+
 ### Home Assistant integration
 The custom parameters are now available on Home Assistant, allowing you to directly set up your coffee machine through it. I chose not to use the [haco](https://github.com/fmtr/haco) library because I prefer not to install unnecessary plugins on Home Assistant when a feature is natively supported. Instead, I've developed a small library, HaMqttMgmt.be, to handle the creation and bidirectional update of MQTT entities from Berry using Home Assistant's standard discovery MQTT protocol.
-
-### Multiple presets management (Coming soon)
-Are you using multiple types of coffee pods? Do each of these types have different brewing times?
 
 ## Calibration:
 
@@ -138,10 +173,13 @@ Nel mio caso, il led di accensione era all'interno dell'interruttore di accensio
 
 ## Configurazione Preliminare
 
-Prima di procedere, assicurati di aver accesso alla console di Tasmota per il tuo dispositivo Sonoff Dual R3 v2. Inserisci i seguenti comandi nella console di Tasmota per abilitare le modalità di interruttore necessarie:
+Prima di procedere con la configurazione iniziale, si prega di notare:
 
+**Configurazione SwitchMode**: A partire da Feature 1, le impostazioni SwitchMode vengono configurate automaticamente in fase di esecuzione dal modulo InputMgmt. Se stai aggiornando da una versione precedente, puoi tranquillamente ignorare i comandi SwitchMode manuali di seguito. Il dispositivo si auto-configurerà all'avvio.
+
+**Setup manuale legacy** (Se necessario per altre configurazioni):
 ```bash
-SwitchMode1 3
+SwitchMode1 15
 SwitchMode2 15
 ```
 
@@ -175,11 +213,49 @@ Puoi utilizzare questa funzione per calibrare la tua macchina da caffè come ved
 
 Sei stanco di aspettare che la macchina da caffè sia pronta prima di preparare il caffè? Con la funzione di avvio automatico, puoi caricare le tue cialde di caffè preferite e la tua tazza di caffè mentre la macchina da caffè è spenta. Basta premere e tenere premuto il pulsante di preparazione per 2,5 secondi e la macchina da caffè si accenderà in modalità di avvio automatico! Una volta pronta la macchina da caffè, il processo di preparazione del caffè inizierà automaticamente!
 
-### Integrazione con Home Assistant
-Ora i parametri personalizzati sono disponibili su Home Assistant, consentendoti di configurare direttamente la tua macchina del caffè tramite HA. Ho scelto di non utilizzare la libreria [haco](https://github.com/fmtr/haco) perché preferisco non installare plugin non necessari su Home Assistant quando una funzionalità è supportata nativamente. Invece, ho sviluppato una piccola libreria, HaMqttMgmt.be, per gestire la creazione e l'aggiornamento bidirezionale delle entità MQTT da Berry utilizzando il protocollo MQTT standard di discovery di Home Assistant.
+### Multiple Profili di Caffè (Feature 1) ✨
 
-### Gestione di più impostazioni predefinite
-Stai utilizzando diversi tipi di cialde caffè? E ogni tipo ha un tempo di estrazione diverso?
+Questa funzionalità abilita la gestione di due profili di caffè indipendenti con diverse durate di estrazione.
+
+#### Selezione e Controllo del Profilo
+
+- **Pulsante 1**: Seleziona il profilo Caffè1
+- **Pulsante 2**: Seleziona il profilo Caffè2
+- **Home Assistant**: Dropdown Coffee Selection per cambio profilo remoto
+
+**Pressione breve** (< 2,5 secondi):
+- Se la macchina è **SPENTA**: Accende solo l'elemento riscaldante (Power1) - pronto per l'estrazione manuale
+- Se la macchina è **ACCESA**: Attiva/disattiva la pompa (Power2) - utile per erogazione manuale, spurgo linee o pulizia
+
+**Pressione lunga** (≥ 2,5 secondi):
+- Attiva la modalità auto-start per il profilo selezionato
+- Una volta riscaldata, avvia automaticamente l'estrazione con il tempo del profilo selezionato
+
+#### Durate di Estrazione Indipendenti e Modalità di Apprendimento
+
+Ogni profilo ha:
+- Durata di estrazione indipendente (Coffee1Time, Coffee2Time)
+- Modalità di apprendimento: Premi "Set Last Coffee Time" per salvare la durata effettiva nel profilo selezionato
+- Nessuna contaminazione tra profili: Solo il tempo del profilo selezionato viene aggiornato
+
+#### Parametri di Configurazione
+
+- **Off Delay** (minuti): Spegnimento automatico dopo inattività
+- **Coffee 1 Time** (secondi): Durata estrazione per Caffè1
+- **Coffee 2 Time** (secondi): Durata estrazione per Caffè2
+- **Last Coffee Time** (secondi): Durata misurata dall'ultima estrazione (sola lettura)
+
+#### Entità MQTT
+
+- `SelectedCoffee` (select): Scegli tra Caffè 1 e Caffè 2
+- `Coffee1Time` (number): Durata estrazione Caffè1
+- `Coffee2Time` (number): Durata estrazione Caffè2
+- `OffDelay` (number): Ritardo spegnimento automatico
+- `SetLastCoffeeTime` (button): Applica durata misurata al profilo selezionato
+
+### Integrazione con Home Assistant
+
+Ora i parametri personalizzati sono disponibili su Home Assistant, consentendoti di configurare direttamente la tua macchina del caffè tramite HA. Ho scelto di non utilizzare la libreria [haco](https://github.com/fmtr/haco) perché preferisco non installare plugin non necessari su Home Assistant quando una funzionalità è supportata nativamente. Invece, ho sviluppato una piccola libreria, HaMqttMgmt.be, per gestire la creazione e l'aggiornamento bidirezionale delle entità MQTT da Berry utilizzando il protocollo MQTT standard di discovery di Home Assistant.
 
 ## Calibrazione:
 
@@ -209,3 +285,89 @@ Hai bisogno di una bilancia di precisione.
   <img width="500" alt="immagine" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4336f6fb-ceeb-4c4b-821e-e37d3322beef"><br/>
   <img width="500" alt="immagine" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/d34a4fab-184c-44b9-88c2-14c5b968332b"><br/>
 </details>
+
+## Testing Feature 1 (Multiple Coffee Profiles)
+
+### Test Checklist
+
+1. **Physical Button Behavior**
+   - [ ] Short-press Button 1/2 while machine is OFF → Only Power1 (resistenza) turns on
+   - [ ] Short-press Button 1/2 while machine is ON → Power2 (pump) toggles
+   - [ ] Long-press Button 1/2 → Machine enters auto-start mode, triggers after heat-up
+   - [ ] Press duration correctly differentiates between short (< 2.5s) and long (≥ 2.5s)
+
+2. **MQTT Coffee Selection**
+   - [ ] Coffee Selection dropdown is available in Home Assistant
+   - [ ] Selecting Coffee 1 updates SelectedCoffee to "1"
+   - [ ] Selecting Coffee 2 updates SelectedCoffee to "2"
+   - [ ] Current selection is reflected in the UI
+   - [ ] Selection persists after a short brew cycle
+
+3. **Dual Coffee Profiles**
+   - [ ] Coffee1Time can be set independently (e.g., 15 seconds)
+   - [ ] Coffee2Time can be set independently (e.g., 25 seconds)
+   - [ ] Brew time used matches the currently selected profile
+   - [ ] Timer duration changes when switching profiles before brewing
+
+4. **Learning Mode**
+   - [ ] Brew Coffee1, press "Set Last Coffee Time" → Only Coffee1Time updates
+   - [ ] Brew Coffee2, press "Set Last Coffee Time" → Only Coffee2Time updates
+   - [ ] Other profile's time remains unchanged
+   - [ ] Learning mode respects the currently selected profile
+
+5. **Off Delay Timer**
+   - [ ] Set Off Delay to 2 minutes via MQTT
+   - [ ] Turn on machine, don't brew
+   - [ ] After 2 minutes of inactivity, machine auto-shuts down
+   - [ ] Off Delay resets when brewing occurs
+
+### Troubleshooting
+
+- **Button presses not detected**: Check GPIO connections on pins 32 and 33. Verify inverted logic (0=pressed, 1=released) in hardware.
+- **MQTT entities not showing in HA**: Ensure Tasmota device has valid MQTT broker connection. Check Home Assistant's MQTT integration logs.
+- **Wrong brewing time applied**: Verify current selection in `persist.SelectedCoffee` matches expected profile in MQTT logs.
+- **Learning mode updates both profiles**: Check that only the selected profile's time is being written in logs.
+
+---
+
+## Test di Feature 1 (Multiple Profili di Caffè)
+
+### Checklist di Test
+
+1. **Comportamento dei Pulsanti Fisici**
+   - [ ] Pressione breve Pulsante 1/2 mentre la macchina è SPENTA → Solo Power1 (resistenza) si accende
+   - [ ] Pressione breve Pulsante 1/2 mentre la macchina è ACCESA → Power2 (pompa) attiva/disattiva
+   - [ ] Pressione lunga Pulsante 1/2 → Macchina entra in modalità auto-start, attiva dopo riscaldamento
+   - [ ] La durata della pressione differenzia correttamente tra breve (< 2,5s) e lunga (≥ 2,5s)
+
+2. **Selezione Caffè da MQTT**
+   - [ ] Dropdown Coffee Selection è disponibile in Home Assistant
+   - [ ] Selezionare Caffè 1 aggiorna SelectedCoffee a "1"
+   - [ ] Selezionare Caffè 2 aggiorna SelectedCoffee a "2"
+   - [ ] La selezione corrente è riflessa nell'interfaccia
+   - [ ] La selezione persiste dopo un breve ciclo di estrazione
+
+3. **Due Profili di Caffè**
+   - [ ] Coffee1Time può essere impostato indipendentemente (ad es. 15 secondi)
+   - [ ] Coffee2Time può essere impostato indipendentemente (ad es. 25 secondi)
+   - [ ] Il tempo di estrazione utilizzato corrisponde al profilo attualmente selezionato
+   - [ ] La durata del timer cambia quando si commutano i profili prima dell'estrazione
+
+4. **Modalità di Apprendimento**
+   - [ ] Estrai Caffè1, premi "Set Last Coffee Time" → Solo Coffee1Time viene aggiornato
+   - [ ] Estrai Caffè2, premi "Set Last Coffee Time" → Solo Coffee2Time viene aggiornato
+   - [ ] Il tempo dell'altro profilo rimane invariato
+   - [ ] La modalità di apprendimento rispetta il profilo attualmente selezionato
+
+5. **Timer Off Delay**
+   - [ ] Imposta Off Delay a 2 minuti tramite MQTT
+   - [ ] Accendi la macchina, non estrarre
+   - [ ] Dopo 2 minuti di inattività, la macchina si spegne automaticamente
+   - [ ] Off Delay si resetta quando si estrae
+
+### Diagnosi dei Problemi
+
+- **Le pressioni dei pulsanti non vengono rilevate**: Controlla i collegamenti GPIO sui pin 32 e 33. Verifica la logica invertita (0=premuto, 1=rilasciato) nell'hardware.
+- **Le entità MQTT non appaiono in HA**: Assicurati che il dispositivo Tasmota abbia una connessione MQTT broker valida. Controlla i log di integrazione MQTT di Home Assistant.
+- **Viene applicato il tempo di estrazione sbagliato**: Verifica che la selezione corrente in `persist.SelectedCoffee` corrisponda al profilo previsto nei log MQTT.
+- **La modalità di apprendimento aggiorna entrambi i profili**: Controlla che nei log venga scritto solo il tempo del profilo selezionato.
