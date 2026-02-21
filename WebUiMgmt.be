@@ -59,7 +59,7 @@ class WebUiMgmt
       webserver.content_send("<p><form style='display: block;' action='/WebUiMgmt' method='post'>")
 
       webserver.content_send("<table style='width:100%'>")
-      webserver.content_send(format("<tr><td><p>Status: <b>%s</b></p></td></tr>", persist.Status))
+      webserver.content_send(format("<tr><td style='width:50%%'><p>Status: <b>%s</b></p></td><td style='width:50%%'><p>Mode: <b>%s</b></p></td></tr>", persist.Status, persist.has('Mode') ? persist.Mode : 'Manual'))
       webserver.content_send("<tr><td style='width:50%%'><p><b>Off delay time (m)</b></p></td>")
       webserver.content_send("<td style='width:50%%'><p><b>Selected Coffee Profile</b></p></td></tr>")
       webserver.content_send(format("<tr><td><p><input style='width:100px' type='number' min='%i' max='%i' name='OffDelay' value='%i'></p></td>", self.OffDelayMin, self.OffDelayMax, persist.OffDelay))

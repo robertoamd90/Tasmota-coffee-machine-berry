@@ -121,6 +121,7 @@ Each profile has:
 - `Coffee2Time` (number): Coffee2 brew duration
 - `OffDelay` (number): Auto-shutdown delay
 - `SetLastCoffeeTime` (button): Apply measured time to selected profile
+- `Mode` (sensor): Active function indicator — `Manual`, `Auto-start`, `Preload`, `Learning`
 
 ### Home Assistant integration
 The custom parameters are now available on Home Assistant, allowing you to directly set up your coffee machine through it. I chose not to use the [haco](https://github.com/fmtr/haco) library because I prefer not to install unnecessary plugins on Home Assistant when a feature is natively supported. Instead, I've developed a small library, HaMqttMgmt.be, to handle the creation and bidirectional update of MQTT entities from Berry using Home Assistant's standard discovery MQTT protocol.
@@ -264,6 +265,7 @@ Ogni profilo ha:
 - `Coffee2Time` (number): Durata estrazione Caffè2
 - `OffDelay` (number): Ritardo spegnimento automatico
 - `SetLastCoffeeTime` (button): Applica durata misurata al profilo selezionato
+- `Mode` (sensor): Indicatore della funzione attiva — `Manual`, `Auto-start`, `Preload`, `Learning`
 
 ### Integrazione con Home Assistant
 
