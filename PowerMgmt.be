@@ -14,11 +14,14 @@ class PowerMgmt
   var statusMqtt
   var autoStartMqtt
 
+  var learningMode
+
   def init()
     self.powerStatus1 = gpio.digital_read(27)
     self.powerStatus2 = gpio.digital_read(14)
     self.preloadPumpTime = 1
     self.autoStartEnabled = false
+    self.learningMode = false
 
 
     self.lastCoffeeTimeMqtt = HaMqttSensor('Last Coffee Time', 'LastCoffeeTime', 'mdi:coffee', nil, 2, 'sec')
@@ -57,6 +60,7 @@ class PowerMgmt
       tasmota.set_timer( int(1500), /-> self.checkPreloadPump(), "CheckPreloadPump")
     else
       print('Power powerStatus1 changed to: 0')
+      self.learningMode = false
       tasmota.cmd("Power2 Off")
       tasmota.remove_timer("OffDelay")
       tasmota.remove_timer("CoffeeTime")
@@ -96,11 +100,22 @@ class PowerMgmt
   end
 
   def power2SetTimer()
+    if self.learningMode return end
     var timeKey = "Coffee" + persist.SelectedCoffee + "Time"
     if persist.has(timeKey)
       tasmota.remove_timer("CoffeeTime")
       tasmota.set_timer( int(persist.member(timeKey) * 1000), /-> tasmota.cmd("Power2 Off"), "CoffeeTime")
     end
+  end
+
+  def activateLearningMode(coffeeNum)
+    print(format("### activateLearningMode coffeeNum: %s", coffeeNum))
+    persist.SelectedCoffee = coffeeNum
+    if WebUiMgmt.webUiMgmt != nil
+      WebUiMgmt.webUiMgmt.CoffeeSelectionMqtt.setValue()
+    end
+    self.learningMode = true
+    tasmota.cmd("Power2 On")
   end
 
   def checkPreloadPump()
@@ -192,7 +207,11 @@ class PowerMgmt
         print(format("Got LastCoffeeTime /s"),lastCoffeeTimer )
         persist.LastCoffeeTime = lastCoffeeTimer
         self.lastCoffeeTimeMqtt.setValue()
+        if self.learningMode
+          WebUiMgmt.webUiMgmt.setLastCoffeeTime()
+        end
       end
+      self.learningMode = false
       self.coffeeStartTime = nil
     end
   end

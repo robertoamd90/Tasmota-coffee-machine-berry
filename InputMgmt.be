@@ -106,20 +106,32 @@ class InputMgmt
 
   def checkInput1LongPress()
     if self.input1PressedTime
-      if tasmota.millis() - self.input1PressedTime >= 2500
-        print(format("Input 1 long pressed (%i ms)", tasmota.millis() - self.input1PressedTime))
+      var elapsed = tasmota.millis() - self.input1PressedTime
+      if elapsed >= 2500
         self.input1PressedTime = nil
-        PowerMgmt.powerMgmt.setAutoStart("1")
+        if PowerMgmt.powerMgmt.powerStatus1
+          print(format("Input 1 long pressed (%i ms) - activating learning mode", elapsed))
+          PowerMgmt.powerMgmt.activateLearningMode("1")
+        else
+          print(format("Input 1 long pressed (%i ms) - setAutoStart", elapsed))
+          PowerMgmt.powerMgmt.setAutoStart("1")
+        end
       end
     end
   end
 
   def checkInput2LongPress()
     if self.input2PressedTime
-      if tasmota.millis() - self.input2PressedTime >= 2500
-        print(format("Input 2 long pressed (%i ms)", tasmota.millis() - self.input2PressedTime))
+      var elapsed = tasmota.millis() - self.input2PressedTime
+      if elapsed >= 2500
         self.input2PressedTime = nil
-        PowerMgmt.powerMgmt.setAutoStart("2")
+        if PowerMgmt.powerMgmt.powerStatus1
+          print(format("Input 2 long pressed (%i ms) - activating learning mode", elapsed))
+          PowerMgmt.powerMgmt.activateLearningMode("2")
+        else
+          print(format("Input 2 long pressed (%i ms) - setAutoStart", elapsed))
+          PowerMgmt.powerMgmt.setAutoStart("2")
+        end
       end
     end
   end
