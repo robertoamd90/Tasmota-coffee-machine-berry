@@ -2,7 +2,7 @@
 
 # Script to upload .be files to Tasmota device
 # Usage: ./upload-to-tasmota.sh [ip] [file1.be] [file2.be] ...
-# Or: ./upload-to-tasmota.sh [ip] (uploads all .be files in the folder)
+# Or: ./upload-to-tasmota.sh [ip] (uploads all .be files from src/)
 
 # Enable globbing for zsh
 setopt NULL_GLOB
@@ -23,9 +23,9 @@ if [ -z "$1" ]; then
     print_error "Tasmota device IP not provided"
     echo "Usage: $0 <ip> [file1.be file2.be ...]"
     echo "Examples:"
-    echo "  $0 192.168.1.100                    # Upload all .be files"
-    echo "  $0 192.168.1.100 PowerMgmt.be       # Upload a specific file"
-    echo "  $0 192.168.1.100 *.be               # Upload all .be files"
+    echo "  $0 192.168.1.100                    # Upload all .be files from src/"
+    echo "  $0 192.168.1.100 src/PowerMgmt.be   # Upload a specific file"
+    echo "  $0 192.168.1.100 src/*.be            # Upload all .be files from src/"
     exit 1
 fi
 
@@ -39,13 +39,13 @@ declare -a files_to_upload
 if [ $# -gt 0 ]; then
     files_to_upload=("$@")
 else
-    # Otherwise upload all .be files in current directory
-    files_to_upload=(*.be)
+    # Otherwise upload all .be files from src/
+    files_to_upload=(src/*.be)
     if [ ${#files_to_upload[@]} -eq 0 ]; then
-        print_error "No .be files found in current directory"
+        print_error "No .be files found in src/"
         exit 1
     fi
-    print_info "No files specified, uploading all .be files found"
+    print_info "No files specified, uploading all .be files from src/"
 fi
 
 # URLs
@@ -83,29 +83,30 @@ for file in "${files_to_upload[@]}"; do
         continue
     fi
 
+    filename=$(basename "$file")
     ((total++))
-    print_info "Uploading: $file"
+    print_info "Uploading: $filename"
 
-    # Upload
-    if ! curl -f -s -F "ufsu=@${file}" "${UPLOAD_URL}" > /dev/null 2>&1; then
-        print_error "Upload failed: $file"
+    # Upload (Tasmota uses only the basename, regardless of local path)
+    if ! curl -f -s -F "ufsu=@${file};filename=${filename}" "${UPLOAD_URL}" > /dev/null 2>&1; then
+        print_error "Upload failed: $filename"
         ((failed++))
         [ $total -lt ${#files_to_upload[@]} ] && sleep 0.5
         continue
     fi
 
     # Verify: download back and compare
-    VERIFY_FILE="${VERIFY_TMP}/${file}"
-    if curl -f -s "${DOWNLOAD_URL}?download=/${file}" -o "${VERIFY_FILE}" 2>&1; then
+    VERIFY_FILE="${VERIFY_TMP}/${filename}"
+    if curl -f -s "${DOWNLOAD_URL}?download=/${filename}" -o "${VERIFY_FILE}" 2>&1; then
         if cmp -s "${file}" "${VERIFY_FILE}"; then
-            print_success "Uploaded and verified: $file"
+            print_success "Uploaded and verified: $filename"
             ((success++))
         else
-            print_error "Verification failed (content mismatch): $file"
+            print_error "Verification failed (content mismatch): $filename"
             ((failed++))
         fi
     else
-        print_error "Verification failed (download error): $file"
+        print_error "Verification failed (download error): $filename"
         ((failed++))
     fi
 
