@@ -51,20 +51,20 @@ class InputMgmt
 
   def input1Changed()
     if self.input1
-      print('Power input1 changed to: 1')
+      print("[InputMgmt] input1 released")
       self.checkInput1Release()
     else
-      print('Power input1 changed to: 0')
+      print("[InputMgmt] input1 pressed")
       self.input1PressedTime = tasmota.millis()
     end
   end
 
   def input2Changed()
     if self.input2
-      print('Power input2 changed to: 1')
+      print("[InputMgmt] input2 released")
       self.checkInput2Release()
     else
-      print('Power input2 changed to: 0')
+      print("[InputMgmt] input2 pressed")
       self.input2PressedTime = tasmota.millis()
     end
   end
@@ -73,7 +73,7 @@ class InputMgmt
     if self.input1PressedTime
       var pressTimer = tasmota.millis() - self.input1PressedTime
       if pressTimer < 2500
-        print(format("Input 1 pressed for %i ms", pressTimer))
+        print(format("[InputMgmt] input1 short press | duration=%ims → onCoffeeSelected", pressTimer))
         PowerMgmt.powerMgmt.onCoffeeSelected("1")
       end
       self.input1PressedTime = nil
@@ -84,7 +84,7 @@ class InputMgmt
     if self.input2PressedTime
       var pressTimer = tasmota.millis() - self.input2PressedTime
       if pressTimer < 2500
-        print(format("Input 2 pressed for %i ms", pressTimer))
+        print(format("[InputMgmt] input2 short press | duration=%ims → onCoffeeSelected", pressTimer))
         PowerMgmt.powerMgmt.onCoffeeSelected("2")
       end
       self.input2PressedTime = nil
@@ -96,7 +96,7 @@ class InputMgmt
       var delta = self.input1PressedTime - self.input2PressedTime
       if delta < 0  delta = -delta  end
       if delta < 500
-        print(format("Simultaneous press detected (delta: %i ms)", delta))
+        print(format("[InputMgmt] simultaneous press | delta=%ims → P1 OFF", delta))
         self.input1PressedTime = nil
         self.input2PressedTime = nil
         tasmota.cmd("Power1 Off")
@@ -110,10 +110,10 @@ class InputMgmt
       if elapsed >= 2500
         self.input1PressedTime = nil
         if PowerMgmt.powerMgmt.powerStatus1
-          print(format("Input 1 long pressed (%i ms) - activating learning mode", elapsed))
+          print(format("[InputMgmt] input1 long press | duration=%ims → learningMode", elapsed))
           PowerMgmt.powerMgmt.activateLearningMode("1")
         else
-          print(format("Input 1 long pressed (%i ms) - setAutoStart", elapsed))
+          print(format("[InputMgmt] input1 long press | duration=%ims → autoStart", elapsed))
           PowerMgmt.powerMgmt.setAutoStart("1")
         end
       end
@@ -126,10 +126,10 @@ class InputMgmt
       if elapsed >= 2500
         self.input2PressedTime = nil
         if PowerMgmt.powerMgmt.powerStatus1
-          print(format("Input 2 long pressed (%i ms) - activating learning mode", elapsed))
+          print(format("[InputMgmt] input2 long press | duration=%ims → learningMode", elapsed))
           PowerMgmt.powerMgmt.activateLearningMode("2")
         else
-          print(format("Input 2 long pressed (%i ms) - setAutoStart", elapsed))
+          print(format("[InputMgmt] input2 long press | duration=%ims → autoStart", elapsed))
           PowerMgmt.powerMgmt.setAutoStart("2")
         end
       end

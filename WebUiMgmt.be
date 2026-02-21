@@ -123,10 +123,8 @@ class WebUiMgmt
           persist.OffDelay = int(webserver.arg("OffDelay"))
           persist.Coffee1Time = real(webserver.arg("Coffee1Time"))
           persist.Coffee2Time = real(webserver.arg("Coffee2Time"))
-          print(format("Got SelectedCoffee: %s", persist.SelectedCoffee))
-          print(format("Got OffDelay"),persist.OffDelay )
-          print(format("Got Coffee1Time"),persist.Coffee1Time )
-          print(format("Got Coffee2Time"),persist.Coffee2Time )
+          print(format("[WebUiMgmt] settings saved | SelectedCoffee=%s OffDelay=%i Coffee1Time=%.2f Coffee2Time=%.2f",
+            persist.SelectedCoffee, persist.OffDelay, persist.Coffee1Time, persist.Coffee2Time))
           persist.save()
           self.CoffeeSelectionMqtt.setValue()
           self.OffDelayMqtt.setValue()
@@ -168,7 +166,7 @@ class WebUiMgmt
         persist.Coffee2Time = persist.LastCoffeeTime
         self.Coffee2TimeMqtt.setValue()
       end
-      print(format("Set LastCoffeeTime for Coffee %s: %.2f", persist.SelectedCoffee, persist.LastCoffeeTime))
+      print(format("[WebUiMgmt] setLastCoffeeTime | coffee=%s time=%.2fs", persist.SelectedCoffee, persist.LastCoffeeTime))
       persist.save()
     end
 
