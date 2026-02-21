@@ -99,7 +99,7 @@ class PowerMgmt
     var timeKey = "Coffee" + persist.SelectedCoffee + "Time"
     if persist.has(timeKey)
       tasmota.remove_timer("CoffeeTime")
-      tasmota.set_timer( int(persist[timeKey] * 1000), /-> tasmota.cmd("Power2 Off"), "CoffeeTime")
+      tasmota.set_timer( int(persist.member(timeKey) * 1000), /-> tasmota.cmd("Power2 Off"), "CoffeeTime")
     end
   end
 
