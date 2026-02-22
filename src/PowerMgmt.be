@@ -12,17 +12,24 @@ class PowerMgmt
 
   var lastCoffeeTimeMqtt
   var statusMqtt
+  var modeMqtt
   var autoStartMqtt
+
+  var learningMode
+  var preloadPumpActive
 
   def init()
     self.powerStatus1 = gpio.digital_read(27)
     self.powerStatus2 = gpio.digital_read(14)
     self.preloadPumpTime = 1
     self.autoStartEnabled = false
+    self.learningMode = false
+    self.preloadPumpActive = false
 
 
     self.lastCoffeeTimeMqtt = HaMqttSensor('Last Coffee Time', 'LastCoffeeTime', 'mdi:coffee', nil, 2, 'sec')
     self.statusMqtt = HaMqttSensor('Status', 'Status', nil, nil, nil, nil)
+    self.modeMqtt = HaMqttSensor('Mode', 'Mode', 'mdi:coffee-maker', nil, nil, nil)
     self.autoStartMqtt = HaMqttButton('-Auto Start Coffee', 'AutoStartCoffee', 'mdi:coffee-to-go' , nil, /-> self.setAutoStart(persist.SelectedCoffee) )
 
     if nil != PowerMgmt.powerMgmt
@@ -52,34 +59,37 @@ class PowerMgmt
 
   def powerStatus1Changed()
     if self.powerStatus1
-      print('Power powerStatus1 changed to: 1')
+      print("[PowerMgmt] P1 ON")
       self.power1SetTimer()
       tasmota.set_timer( int(1500), /-> self.checkPreloadPump(), "CheckPreloadPump")
     else
-      print('Power powerStatus1 changed to: 0')
+      print("[PowerMgmt] P1 OFF")
+      self.learningMode = false
       tasmota.cmd("Power2 Off")
       tasmota.remove_timer("OffDelay")
       tasmota.remove_timer("CoffeeTime")
       self.preloadPumpResetTimer()
       self.autoStartResetTimer()
+      self.updateMode()
     end
     self.updateStatus()
   end
 
   def powerStatus2Changed()
     if self.powerStatus2
-      print('Power powerStatus2 changed to: 1')
       if self.powerStatus1
+        print(format("[PowerMgmt] P2 ON | coffee=%s learning=%s", persist.SelectedCoffee, self.learningMode ? "on" : "off"))
         self.coffeeStartTime = tasmota.millis()
         self.power1SetTimer()
         self.power2SetTimer()
         self.preloadPumpResetTimer()
         self.autoStartResetTimer()
       else
+        print("[PowerMgmt] P2 ON but P1 OFF → forcing P2 OFF")
         tasmota.cmd("Power2 Off")
       end
     else
-      print('Power powerStatus2 changed to: 0')
+      print("[PowerMgmt] P2 OFF")
       tasmota.remove_timer("CoffeeTime")
       self.preloadPumpResetTimer()
       self.autoStartResetTimer()
@@ -96,6 +106,7 @@ class PowerMgmt
   end
 
   def power2SetTimer()
+    if self.learningMode return end
     var timeKey = "Coffee" + persist.SelectedCoffee + "Time"
     if persist.has(timeKey)
       tasmota.remove_timer("CoffeeTime")
@@ -103,38 +114,55 @@ class PowerMgmt
     end
   end
 
+  def activateLearningMode(coffeeNum)
+    print(format("[PowerMgmt] activateLearningMode | coffee=%s", coffeeNum))
+    persist.SelectedCoffee = coffeeNum
+    if WebUiMgmt.webUiMgmt != nil
+      WebUiMgmt.webUiMgmt.CoffeeSelectionMqtt.setValue()
+    end
+    self.learningMode = true
+    self.updateMode()
+    tasmota.cmd("Power2 On")
+  end
+
   def checkPreloadPump()
-    print("### checkPreloadPump Start")
-    print(format("### checkPreloadPump self.preloadPumpTime: /s"),self.preloadPumpTime )
-    print(format("### checkPreloadPump energy.active_power: /s"),energy.active_power)
-    print(format("### checkPreloadPump !self.autoStartEnabled: /s"),!self.autoStartEnabled )
-    if self.preloadPumpTime
-    && energy.active_power > 0
-    && !self.autoStartEnabled
+    var doPreload = self.preloadPumpTime && energy.active_power > 0 && !self.autoStartEnabled
+    print(format("[PowerMgmt] checkPreloadPump | preloadTime=%i power=%iW autoStart=%s → %s",
+      self.preloadPumpTime, energy.active_power, self.autoStartEnabled ? "on" : "off",
+      doPreload ? "start" : "skip"))
+    if doPreload
       self.preloadPump()
     end
   end
 
   def preloadPump()
-    print("### preloadPump Start")
-    print(format("### checkPreloadPump energy.active_power: /s"),energy.active_power)
+    print(format("[PowerMgmt] preloadPump | power=%iW → %s", energy.active_power, energy.active_power == 0 ? "P2 ON" : "retry in 1s"))
     if energy.active_power == 0
+      self.preloadPumpActive = true
+      self.updateMode()
       tasmota.cmd("Power2 On")
-      tasmota.set_timer( int(self.preloadPumpTime * 1000), /-> tasmota.cmd("Power2 Off"), "PreloadPumpSwitchOff")
+      tasmota.set_timer( int(self.preloadPumpTime * 1000), /-> self.preloadPumpEnd(), "PreloadPumpSwitchOff")
     else
       tasmota.set_timer( int(1000), /-> self.preloadPump(), "PreloadPump")
     end
 
   end
-  
+
+  def preloadPumpEnd()
+    self.preloadPumpActive = false
+    tasmota.cmd("Power2 Off")
+    self.updateMode()
+  end
+
   def preloadPumpResetTimer()
-    print("### preloadPumpResetTimer Start")
+    self.preloadPumpActive = false
     tasmota.remove_timer("CheckPreloadPump")
     tasmota.remove_timer("PreloadPump")
+    tasmota.remove_timer("PreloadPumpSwitchOff")
   end
 
   def onCoffeeSelected(coffeeNum)
-    print(format("### onCoffeeSelected coffeeNum: %s", coffeeNum))
+    print(format("[PowerMgmt] onCoffeeSelected | coffee=%s p1=%s", coffeeNum, self.powerStatus1 ? "on" : "off"))
     persist.SelectedCoffee = coffeeNum
     if WebUiMgmt.webUiMgmt != nil
       WebUiMgmt.webUiMgmt.CoffeeSelectionMqtt.setValue()
@@ -148,23 +176,23 @@ class PowerMgmt
   end
 
   def setAutoStart(coffeeNum)
-    print(format("### setAutoStart coffeeNum: %s", coffeeNum))
+    print(format("[PowerMgmt] setAutoStart | coffee=%s p1=%s p2=%s", coffeeNum, self.powerStatus1 ? "on" : "off", self.powerStatus2 ? "on" : "off"))
     persist.SelectedCoffee = coffeeNum
     if WebUiMgmt.webUiMgmt != nil
       WebUiMgmt.webUiMgmt.CoffeeSelectionMqtt.setValue()
     end
-    
+
     if !self.powerStatus1
     && !self.powerStatus2
       self.autoStartEnabled = true
+      self.updateMode()
       tasmota.cmd("Power1 On")
       tasmota.set_timer( int(1000), /-> self.checkAutoStart(), "CheckAutoStart")
     end
   end
 
   def checkAutoStart()
-    print("### checkAutoStart Start")
-    print(format("### checkAutoStart energy.active_power: /s"),energy.active_power)
+    print(format("[PowerMgmt] checkAutoStart | power=%iW → %s", energy.active_power, energy.active_power > 0 ? "start" : "skip"))
     if energy.active_power > 0
       self.preloadPumpResetTimer()
       self.autoStart()
@@ -172,6 +200,7 @@ class PowerMgmt
   end
 
   def autoStart()
+    print(format("[PowerMgmt] autoStart | power=%iW → %s", energy.active_power, energy.active_power == 0 ? "P2 ON" : "retry in 1s"))
     if energy.active_power == 0
       tasmota.cmd("Power2 On")
     else
@@ -183,17 +212,25 @@ class PowerMgmt
     self.autoStartEnabled = false
     tasmota.remove_timer("CheckAutoStart")
     tasmota.remove_timer("AutoStart")
+    self.updateMode()
   end
 
   def checkLastCoffeeTimer()
     if self.coffeeStartTime
       var lastCoffeeTimer = real(format("%.2f", real(tasmota.millis() - self.coffeeStartTime)/1000))
       if lastCoffeeTimer > 5
-        print(format("Got LastCoffeeTime /s"),lastCoffeeTimer )
+        print(format("[PowerMgmt] lastCoffeeTime=%.2fs → saved (coffee=%s learning=%s)", lastCoffeeTimer, persist.SelectedCoffee, self.learningMode ? "on" : "off"))
         persist.LastCoffeeTime = lastCoffeeTimer
         self.lastCoffeeTimeMqtt.setValue()
+        if self.learningMode
+          WebUiMgmt.webUiMgmt.setLastCoffeeTime()
+        end
+      else
+        print(format("[PowerMgmt] lastCoffeeTime=%.2fs → too short, discarded", lastCoffeeTimer))
       end
+      self.learningMode = false
       self.coffeeStartTime = nil
+      self.updateMode()
     end
   end
 
@@ -204,22 +241,42 @@ class PowerMgmt
   end
 
   def updateStatus()
-    var oldStatus
+    var status
     if self.powerStatus1
       if self.powerStatus2
-        persist.Status= 'Brewing'
+        status = 'Brewing'
       else
         if energy.active_power == 0
-          persist.Status= 'Ready'
+          status = 'Ready'
         else
-          persist.Status= 'Heating'
+          status = 'Heating'
         end
       end
     else
-      persist.Status= 'Standby'
+      status = 'Standby'
     end
-    if persist.Status != oldStatus
+    if persist.Status != status
+      print(format("[PowerMgmt] status=%s", status))
+      persist.Status = status
       self.statusMqtt.setValue()
+    end
+  end
+
+  def updateMode()
+    var mode
+    if self.learningMode
+      mode = 'Learning'
+    elif self.autoStartEnabled
+      mode = 'Auto-start'
+    elif self.preloadPumpActive
+      mode = 'Preload'
+    else
+      mode = 'Manual'
+    end
+    if persist.Mode != mode
+      print(format("[PowerMgmt] mode=%s", mode))
+      persist.Mode = mode
+      self.modeMqtt.setValue()
     end
   end
 
