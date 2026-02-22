@@ -60,12 +60,14 @@ SwitchMode2 15
 
 ## Tasmota Main Page:
 
-![image](https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/7f5eb327-3ae9-4894-8e8e-951ee539bc4c)
+<img width="454" height="953" alt="image" src="https://github.com/user-attachments/assets/208f76f6-8786-4783-9840-27b1317ea8d5" />
+
+
 
 ## Home Assistant Device Page
 
-<img width="337" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/5b895542-f0e6-4715-a2ff-f73d977676a4"></br>
-<img width="343" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4e468448-5062-414b-821a-4c0b1cf9f266">
+<img width="329" height="341" alt="image" src="https://github.com/user-attachments/assets/46857bad-7f99-4467-a5c2-83b008481d05" /></br>
+<img width="327" height="599" alt="image" src="https://github.com/user-attachments/assets/0052ff31-dd6d-48eb-8957-ba3ea96b1c23" />
 
 ## Features:
 
@@ -192,12 +194,12 @@ SwitchMode2 15
 
 ## Pagina principale di Tasmota:
 
-![immagine](https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/7f5eb327-3ae9-4894-8e8e-951ee539bc4c)
+<img width="454" height="953" alt="image" src="https://github.com/user-attachments/assets/208f76f6-8786-4783-9840-27b1317ea8d5" />
 
 ## Home Assistant Device Page
 
-<img width="337" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/5b895542-f0e6-4715-a2ff-f73d977676a4"></br>
-<img width="343" alt="image" src="https://github.com/robertoamd90/Tasmota-coffee-machine-berry/assets/61760575/4e468448-5062-414b-821a-4c0b1cf9f266">
+<img width="329" height="341" alt="image" src="https://github.com/user-attachments/assets/46857bad-7f99-4467-a5c2-83b008481d05" /></br>
+<img width="327" height="599" alt="image" src="https://github.com/user-attachments/assets/0052ff31-dd6d-48eb-8957-ba3ea96b1c23" />
 
 ##
 
