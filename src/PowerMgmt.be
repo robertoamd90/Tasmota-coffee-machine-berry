@@ -187,7 +187,7 @@ class PowerMgmt
       self.autoStartEnabled = true
       self.updateMode()
       tasmota.cmd("Power1 On")
-      tasmota.set_timer( int(1000), /-> self.checkAutoStart(), "CheckAutoStart")
+      tasmota.set_timer( int(1500), /-> self.checkAutoStart(), "CheckAutoStart")
     end
   end
 
