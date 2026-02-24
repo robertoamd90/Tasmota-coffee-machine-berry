@@ -93,6 +93,7 @@ class HaMqttWithState: HaMqttMgmt
   def generateConfigBody()
     var configBody = super(self).generateConfigBody()
     configBody['state_topic'] = self.stateTopic
+    configBody['value_template'] = '{{ value_json }}'
     return configBody
   end
 
@@ -107,7 +108,7 @@ class HaMqttWithState: HaMqttMgmt
 
   def setValue()
     if self.ready && persist.has(self.unique_id)
-      mqtt.publish(self.stateTopic, format('%s', persist.member(self.unique_id)), true)
+      mqtt.publish(self.stateTopic, json.dump(persist.member(self.unique_id)), true)
     end
   end
 
