@@ -121,6 +121,7 @@ Reason: Tasmota internally subscribes to `homeassistant/#` and tries to JSON-par
 6. **Tag + GitHub release** on every merged PR:
    - New feature → bump **minor** (0.6 → 0.7)
    - Bug fix → bump **patch** (0.6 → 0.6.1)
+7. **Close the GitHub issue** after merge + release: `gh issue close <N> --comment "Closed by PR #X, released in vY.Z."`
 
 ---
 
