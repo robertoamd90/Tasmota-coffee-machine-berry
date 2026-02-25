@@ -7,20 +7,22 @@ class PowerMgmt
   var powerStatus1
   var powerStatus2
   var coffeeStartTime
+  var delayEnergyCheckTime
   var preloadPumpTime
-  var autoStartEnabled
 
   var lastCoffeeTimeMqtt
   var statusMqtt
   var modeMqtt
   var autoStartMqtt
 
+  var autoStartEnabled
   var learningMode
   var preloadPumpActive
 
   def init()
     self.powerStatus1 = gpio.digital_read(27)
     self.powerStatus2 = gpio.digital_read(14)
+    self.delayEnergyCheckTime = 2
     self.preloadPumpTime = 1
     self.autoStartEnabled = false
     self.learningMode = false
@@ -60,7 +62,7 @@ class PowerMgmt
     if self.powerStatus1
       tprint("[PowerMgmt] P1 ON")
       self.power1SetTimer()
-      tasmota.set_timer(int(1500), /-> self.checkPreloadPump(), "CheckPreloadPump")
+      tasmota.set_timer(int(self.delayEnergyCheckTime * 1000), /-> self.checkPreloadPump(), "CheckPreloadPump")
     else
       tprint("[PowerMgmt] P1 OFF")
       self.learningMode = false
@@ -185,7 +187,7 @@ class PowerMgmt
       self.autoStartEnabled = true
       self.updateMode()
       tasmota.cmd("Power1 On")
-      tasmota.set_timer(int(1500), /-> self.checkAutoStart(), "CheckAutoStart")
+      tasmota.set_timer(int(self.delayEnergyCheckTime * 1000), /-> self.checkAutoStart(), "CheckAutoStart")
     end
   end
 
