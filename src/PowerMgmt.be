@@ -8,7 +8,6 @@ class PowerMgmt
   var powerStatus2
   var coffeeStartTime
   var delayEnergyCheckTime
-  var preloadPumpTime
 
   var lastCoffeeTimeMqtt
   var statusMqtt
@@ -23,7 +22,6 @@ class PowerMgmt
     self.powerStatus1 = gpio.digital_read(27)
     self.powerStatus2 = gpio.digital_read(14)
     self.delayEnergyCheckTime = 2
-    self.preloadPumpTime = 1
     self.autoStartEnabled = false
     self.learningMode = false
     self.preloadPumpActive = false
@@ -83,7 +81,9 @@ class PowerMgmt
         self.coffeeStartTime = tasmota.millis()
         self.power1SetTimer()
         self.power2SetTimer()
-        self.preloadPumpResetTimer()
+        if !self.preloadPumpActive
+          self.preloadPumpResetTimer()
+        end
         self.autoStartResetTimer()
       else
         tprint("[PowerMgmt] P2 ON but P1 OFF → forcing P2 OFF")
@@ -127,9 +127,12 @@ class PowerMgmt
   end
 
   def checkPreloadPump()
-    var doPreload = self.preloadPumpTime && energy.active_power > 0 && !self.autoStartEnabled
-    tprint(format("[PowerMgmt] checkPreloadPump | preloadTime=%i power=%iW autoStart=%s → %s",
-      self.preloadPumpTime, energy.active_power, self.autoStartEnabled ? "on" : "off",
+    var enabled = persist.has('PreloadPumpEnabled') && persist.PreloadPumpEnabled
+    var doPreload = enabled && energy.active_power > 0 && !self.autoStartEnabled
+    tprint(format("[PowerMgmt] checkPreloadPump | enabled=%s time=%.1fs power=%iW autoStart=%s → %s",
+      enabled ? "yes" : "no",
+      persist.PreloadPumpTime,
+      energy.active_power, self.autoStartEnabled ? "on" : "off",
       doPreload ? "start" : "skip"))
     if doPreload
       self.preloadPump()
@@ -137,12 +140,13 @@ class PowerMgmt
   end
 
   def preloadPump()
-    tprint(format("[PowerMgmt] preloadPump | power=%iW → %s", energy.active_power, energy.active_power == 0 ? "P2 ON" : "retry in 1s"))
+    tprint(format("[PowerMgmt] preloadPump | time=%.1fs power=%iW → %s",
+      persist.PreloadPumpTime, energy.active_power, energy.active_power == 0 ? "P2 ON" : "retry in 1s"))
     if energy.active_power == 0
       self.preloadPumpActive = true
       self.updateMode()
       tasmota.cmd("Power2 On")
-      tasmota.set_timer(int(self.preloadPumpTime * 1000), /-> self.preloadPumpEnd(), "PreloadPumpSwitchOff")
+      tasmota.set_timer(int(persist.PreloadPumpTime * 1000), /-> self.preloadPumpEnd(), "PreloadPumpSwitchOff")
     else
       tasmota.set_timer(int(1000), /-> self.preloadPump(), "PreloadPump")
     end
