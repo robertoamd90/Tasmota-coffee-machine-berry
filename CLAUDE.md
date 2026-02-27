@@ -117,11 +117,12 @@ Reason: Tasmota internally subscribes to `homeassistant/#` and tries to JSON-par
    - `style:` formatting only
    - `docs:` documentation only
 4. **Atomic commits** — one logical change per commit
-5. **PR toward `main`**
-6. **Tag + GitHub release** on every merged PR:
-   - New feature → bump **minor** (0.6 → 0.7)
-   - Bug fix → bump **patch** (0.6 → 0.6.1)
-7. **Close the GitHub issue** after merge + release: `gh issue close <N> --comment "Closed by PR #X, released in vY.Z."`
+5. **Commit only after user review and testing** — make all code changes first, upload to Tasmota (`zsh upload-to-tasmota.sh <ip>`), wait for user to test, then create all commits together
+6. **PR toward `main`**
+7. **Tag + GitHub release** on every merged PR:
+   - New feature → bump **minor** (0.5 → 0.6)
+   - Bug fix → bump **patch** (0.5 → 0.5.1)
+8. **Close the GitHub issue** after merge + release: `gh issue close <N> --comment "Closed by PR #X, released in vY.Z."`
 
 ---
 

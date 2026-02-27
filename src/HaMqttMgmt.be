@@ -262,6 +262,39 @@ class HaMqttSelect: HaMqttInputGen
 
 end
 
+class HaMqttSwitch: HaMqttInputGen
+
+  def init(name, unique_id, icon, entityCategory)
+    super(self).init(name, unique_id, icon, entityCategory)
+    self.mqttType = "switch"
+    self.createEntity()
+  end
+
+  def generateConfigBody()
+    var configBody = super(self).generateConfigBody()
+    configBody['state_on'] = true
+    configBody['state_off'] = false
+    return configBody
+  end
+
+  def castValue(payload_s)
+    if payload_s == 'ON' return true end
+    if payload_s == 'OFF' return false end
+    return nil
+  end
+
+  def getValue(topic, idx, payload_s, payload_b)
+    var payload_typed = self.castValue(payload_s)
+    if payload_typed != nil  # base uses `if payload_typed` which fails for false
+      persist.setmember(self.unique_id, payload_typed)
+      persist.save()
+      self.setValue()
+    end
+    return true
+  end
+
+end
+
 class HaMqttButton: HaMqttMgmt
 
   var buttonFunction
