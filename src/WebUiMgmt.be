@@ -86,12 +86,12 @@ class WebUiMgmt
     webserver.content_send(format("<td><p><input style='width:100px' type='number' min='0.1' max='10' step='0.1' name='PreloadPumpTime' value='%.1f'></p></td></tr>", persist.PreloadPumpTime))
     webserver.content_send("</table>")
 
+    webserver.content_send("<button name='CoffeeSettingsApply' class='button bgrn'>Save</button>")
+
     webserver.content_send("<table style='width:100%'>")
     webserver.content_send(format("<tr><td style='width:70%%'><p>Last coffee time: <b>%.2f</b>(s)</p></td>", persist.LastCoffeeTime))
     webserver.content_send("<td><button name='LastCoffeeTimeApply' class='button bgrn'>Set</button></td></tr>")
     webserver.content_send("</table><hr>")
-
-    webserver.content_send("<button name='CoffeeSettingsApply' class='button bgrn'>Save</button>")
     webserver.content_send("</form></p>")
     webserver.content_send("<p><form action='/WebUiMgmt' style='display: block;' method='get'><button>Configure</button></form></p>")
     webserver.content_send("<p></p></fieldset><p></p>")
